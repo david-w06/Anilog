@@ -10,11 +10,11 @@ public class Anime {
     private int seasons;
     private String status; // "Not Watched", "Watching", "Finished", or "Plan to Watch"
     private String note;
-    private int priority; // 1, 2, or 3
+    private int priority; 
     private int currentEpisodeWatched;
     private double rating; // from 0.0 to 10.0
 
-    // REQUIRES: length > 0, seasons > 0, 1 <= priority <= 3 
+    // REQUIRES: length > 0, seasons > 0
     // MODIFIES: this
     // EFFECTS: constructs an anime entry with default status "Not Watched", 
     //          currentEpisodeWatched set to 0, and rating set to unrated (-1.0)
@@ -91,7 +91,6 @@ public class Anime {
         this.note = note;
     }
 
-    // REQUIRES: 1 <= priority <= 3
     // MODIFIES: this
     // EFFECTS: updates the priority ranking for the anime
     public void setPriority(int priority) {
