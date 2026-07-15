@@ -183,7 +183,6 @@ public class AnimeList {
         return favorite;
     }
 
-    // REQUIRES: priorityWeight > 0, genreWeight > 0
     // EFFECTS: runs a algorithm over "Plan to Watch" anime, 
     //          ranking them by priority and genre preferences, and returns the top 3 recommendations
     public List<Anime> getTopRecommendations(String favoriteGenre) {
