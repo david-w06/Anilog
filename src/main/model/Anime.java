@@ -74,7 +74,7 @@ public class Anime {
     // REQUIRES: season > 0
     // MODIFIES: this
     // EFFECTS: sets a season number for the anime
-    public void setSeasons(int season){
+    public void setSeasons(int season) {
         this.seasons = season;
     }
 
@@ -103,10 +103,10 @@ public class Anime {
     // Flips to Not Watched if current ep is 0, user can still change status on its own.
     public void setCurrentEpisodeWatched(int episode) {
         this.currentEpisodeWatched = episode;
-        if(this.currentEpisodeWatched == length){
+        if (this.currentEpisodeWatched == length) {
             status = "Completed"; 
         }
-        if(this.currentEpisodeWatched == 0){
+        if (this.currentEpisodeWatched == 0) {
             status = "Not Watched"; 
         }
     }

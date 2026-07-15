@@ -51,7 +51,7 @@ public class AnimeTest {
         assertEquals(10.0, testAnime.getRating(), 0.001);
     }
 
-@Test
+    @Test
     public void testSetNote() {
         testAnime.setNote("I loved this");
         assertEquals("I loved this", testAnime.getNote()); 

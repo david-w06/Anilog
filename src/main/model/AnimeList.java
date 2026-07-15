@@ -26,6 +26,7 @@ public class AnimeList {
     public void removeAnime(Anime anime) {
         animes.remove(anime);
     }
+
     public List<Anime> getAnimes() {
         return animes;
     }
@@ -35,8 +36,9 @@ public class AnimeList {
     // EFFECTS: returns a list containing only the anime that feature the specified targetGenre
     public List<Anime> filterByGenre(String targetGenre) {
         List<Anime> filteredList = new ArrayList<>();
-        for(Anime anime : animes){
-            if(anime.getGenre().contains(targetGenre)){
+        
+        for (Anime anime : animes) {
+            if (anime.getGenre().contains(targetGenre)) {
                 filteredList.add(anime);
             }
         } 
@@ -46,9 +48,11 @@ public class AnimeList {
     // REQUIRES: targetStatus is one of "Watching", "Plan to Watch", or "Completed"
     // EFFECTS: returns a list containing only the anime that match the targetStatus
     public List<Anime> filterByStatus(String targetStatus) {
+        
         List<Anime> filteredList = new ArrayList<>();
-        for(Anime anime : animes){
-            if(anime.getStatus().equals(targetStatus)){
+        
+        for (Anime anime : animes) {
+            if (anime.getStatus().equals(targetStatus)) {
                 filteredList.add(anime);
             }
         } 
@@ -59,8 +63,9 @@ public class AnimeList {
     // EFFECTS: returns a list containing only the anime that have the matching number of seasons
     public List<Anime> filterBySeasonCount(int targetSeason) {
         List<Anime> filteredList = new ArrayList<>();
-        for(Anime anime : animes){
-            if(anime.getSeasons() == targetSeason){
+       
+        for (Anime anime : animes) {
+            if (anime.getSeasons() == targetSeason) {
                 filteredList.add(anime);
             }
         } 
@@ -106,9 +111,7 @@ public class AnimeList {
 
                 if (currentRating > highestRating) {
                     highestIndex = j;
-                }
-
-                else if (highestRating == -1.0 && currentRating != -1.0) {
+                } else if (highestRating == -1.0 && currentRating != -1.0) {
                     highestIndex = j;
                 }
             }
@@ -151,8 +154,8 @@ public class AnimeList {
     // EFFECTS: returns the total estimated time spent watching completed/active anime in hours
     public int calculateTotalWatchTime() {
         int time = 0;
-        for(Anime anime : animes){
-            time+=anime.getCurrentEpisodeWatched()*24/60;
+        for (Anime anime : animes) {
+            time += anime.getCurrentEpisodeWatched() * 24 / 60;
         }
         return time;
     }
@@ -164,7 +167,8 @@ public class AnimeList {
         }
         Map<String, Double> genreScores = new HashMap<>(); // using a hashmap to store all genres and their scores
         for (Anime anime : animes) {
-            double score = anime.getCurrentEpisodeWatched()* anime.getRating(); // score = time watched*rating
+            // score = time watched*rating
+            double score = anime.getCurrentEpisodeWatched() * anime.getRating(); 
             for (String genre : anime.getGenre()) {
                 if (!genreScores.containsKey(genre)) {
                     genreScores.put(genre, 0.0); // create a pair for the genre if it doesn't exist
@@ -186,7 +190,7 @@ public class AnimeList {
     // EFFECTS: runs a algorithm over "Plan to Watch" anime, 
     //          ranking them by priority and genre preferences, and returns the top 3 recommendations
     public List<Anime> getTopRecommendations(String favoriteGenre) {
-       List<Anime> recommendations = new ArrayList<>();
+        List<Anime> recommendations = new ArrayList<>();
 
         for (Anime anime : animes) {
             if (anime.getGenre().contains(favoriteGenre)) {
