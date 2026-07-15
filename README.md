@@ -4,7 +4,7 @@
 ## Project Proposal
 
 ### What will the application do?
-**Anilog** is a Java-based desktop application designed to help otakus track, organize, and optimize their media consumption. To diffrentiate from a passive spreadsheet, the application acts as an active assistant. It manages individual anime tracking states automatically, provides easy-to-use filtering and searching functions, builds a dynamic Personal Statistics Dashboard, and features a local JSON-based anime database for quick searching and importing. Additionally, it implements a custom, rule-based recommendation feature that parses user priorities, genres, and length preferences to rank and suggest what the user should watch next from their "Plan to Watch" backlog.
+**Anilog** is a Java-based desktop application designed to help otakus track, organize, and optimize their media consumption. To diffrentiate from a passive spreadsheet, the application acts as an active assistant. It manages individual anime tracking states automatically, provides easy-to-use filtering and searching functions, builds a dynamic Personal Statistics Dashboard, and later features a local JSON-based anime database for quick searching and importing. Additionally, it implements a custom, rule-based recommendation feature that parses user priorities, genres, and length preferences to rank and suggest what the user should watch next from their "Plan to Watch" backlog.
 
 ### Who will use it?
 The application is tailored for **anime and potentially other media hobbyists** who want a lightweight, offline-first alternative to massive web platforms like MyAnimeList. It targets users who want deep insights into their viewing habits and an automated way to sort through a massive backlog of unwatched shows.

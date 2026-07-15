@@ -12,7 +12,7 @@ public class AnimeListTest{
     private Anime frieren;
     private Anime naruto;
     private Anime toradora;
-
+    
     @BeforeEach
     public void runBefore() {
         testList = new AnimeList();
@@ -30,7 +30,7 @@ public class AnimeListTest{
         List<String> toradoraGenres = new ArrayList<>();
         toradoraGenres.add("Romance");
         toradoraGenres.add("Comedy");
-        toradora = new Anime("Toradora", toradoraGenres, 25, 1, "Finished", "Tsundere staple", 3);
+        toradora = new Anime("Toradora", toradoraGenres, 25, 1, "Completed", "Tsundere staple", 3);
     }
 
     @Test
@@ -69,8 +69,9 @@ public class AnimeListTest{
     @Test
     public void testFilterByGenre() {
         testList.addAnime(frieren);
+        testList.addAnime(naruto);
         
-        List<Anime> results = testList.filterByGenre("Adventure");
+        List<Anime> results = testList.filterByGenre("Fantasy");
         assertEquals(1, results.size());
 
         results = testList.filterByGenre("Romance");
@@ -88,10 +89,6 @@ public class AnimeListTest{
         assertTrue(results.contains(frieren));
         assertTrue(results.contains(naruto));
         assertFalse(results.contains(toradora));
-
-        List<Anime> romanceResults = testList.filterByGenre("Romance");
-        assertEquals(1, romanceResults.size());
-        assertTrue(romanceResults.contains(toradora));
     }
 
     @Test
@@ -160,6 +157,19 @@ public class AnimeListTest{
         assertEquals(toradora, sorted.get(2));
     }
 
+    @Test
+    public void testSortByStatus(){
+        testList.addAnime(frieren);
+        testList.addAnime(naruto);
+        testList.addAnime(toradora);
+        
+        List<Anime> sorted = testList.sortByStatus();
+        assertEquals(naruto, sorted.get(0));
+        assertEquals(toradora, sorted.get(1));
+        assertEquals(frieren, sorted.get(2));
+
+    }
+
     // ================= Test Analytical Methods =================
 
     @Test
@@ -167,7 +177,7 @@ public class AnimeListTest{
         testList.addAnime(frieren);  // 28 eps, 1 season
         testList.addAnime(naruto);   // 100 eps per season, 5 seasons
         
-        // Assume each episode is 24 mins or 0.4 hrs, may become dynamic later.
+        // Assume each episode is 24 mins or 0.4 hrs, may become adjustable later.
         
         frieren.setCurrentEpisodeWatched(10); // 4 hours
         naruto.setCurrentEpisodeWatched(50);  // 20 hours
@@ -185,12 +195,11 @@ public class AnimeListTest{
         naruto.setStatus("Plan to Watch");
         toradora.setStatus("Plan to Watch");
 
-        List<Anime> recs = testList.getTopRecommendations("Adventure", 2, 3);
+        List<Anime> recs = testList.getTopRecommendations("Adventure");
         
-        assertEquals(3, recs.size());
+        assertEquals(2, recs.size());
         assertEquals(frieren, recs.get(0));
         assertEquals(naruto, recs.get(1));  
-        assertEquals(toradora, recs.get(2)); 
     }
 
 

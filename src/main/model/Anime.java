@@ -8,7 +8,7 @@ public class Anime {
     private List<String> genre; 
     private int length;
     private int seasons;
-    private String status; // "Not Watched", "Watching", "Finished", or "Plan to Watch"
+    private String status; // "Not Watched", "Watching", "Completed", or "Plan to Watch"
     private String note;
     private int priority; 
     private int currentEpisodeWatched;
@@ -78,7 +78,7 @@ public class Anime {
         this.seasons = season;
     }
 
-    // REQUIRES: status is one of "Not Watched", "Watching", "Finished", or "Plan to Watch"
+    // REQUIRES: status is one of "Not Watched", "Watching", "Completed", or "Plan to Watch"
     // MODIFIES: this
     // EFFECTS: sets a new watch status for the anime
     public void setStatus(String status) {
@@ -99,9 +99,16 @@ public class Anime {
 
     // REQUIRES: 0 <= episode <= length
     // MODIFIES: this
-    // EFFECTS: updates the current episode progress tracker
+    // EFFECTS: updates the current episode progress tracker, if current == total episode, flip status to Completed.
+    // Flips to Not Watched if current ep is 0, user can still change status on its own.
     public void setCurrentEpisodeWatched(int episode) {
         this.currentEpisodeWatched = episode;
+        if(this.currentEpisodeWatched == length){
+            status = "Completed"; 
+        }
+        if(this.currentEpisodeWatched == 0){
+            status = "Not Watched"; 
+        }
     }
 
     // REQUIRES: (rating >= 0.0 && rating <= 10.0) || rating == -1.0
