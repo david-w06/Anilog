@@ -47,12 +47,6 @@ public class AnimeList {
         return null; // Stub
     }
 
-    // REQUIRES: targetYear > 0
-    // EFFECTS: returns a list containing only the anime released in the target year
-    public List<Anime> filterByReleaseYear(int targetYear) {
-        return null; // Stub
-    }
-
     // ================= Sorting Operations =================
     
     // EFFECTS: returns a new list of anime sorted alphabetically by name
