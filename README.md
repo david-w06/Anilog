@@ -16,8 +16,8 @@ As someone who enjoys watching and being emotionally attached to animes, I frequ
 
 ## User Stories
 
-* **As a user,** I want to be able to add a new anime entry to my personal watchlist , specifying its title, total episodes, genre, and more.
-* **As a user,** I want to be able to view my entire watchlist organized by current status (e.g., *Watching*, *Plan to Watch*, *Completed*).
-* **As a user,** I want to be able to increment my watched episode count for a specific anime, having the application automatically flip its status to "Completed" if I hit the maximum episode count.
-* **As a user,** I want to view an automatically calculated statistics dashboard showing my total hours watched, overall average rating, and a breakdown of my top genres.
-* **As a user,** I want to request a personalized recommendation and output the top suggested titles based on my favorite genres and preferred weights.
+* As a user, I want to be able to add a new anime entry to my personal watchlist , specifying its title, total episodes, genre, and more.
+* As a user, I want to be able to view my entire watchlist organized by current status (e.g., *Watching*, *Plan to Watch*, *Completed*).
+* As a user, I want to be able to increment my watched episode count for a specific anime, having the application automatically flip its status to "Completed" if I hit the maximum episode count.
+* As a user, I want to view an automatically calculated statistics dashboard showing my total hours watched, overall average rating, and a breakdown of my top genres.
+* As a user, I want to request a personalized recommendation and output the top suggested titles based on my favorite genres and preferred weights.
