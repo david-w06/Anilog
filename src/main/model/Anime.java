@@ -1,6 +1,5 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
 
@@ -121,7 +120,7 @@ public class Anime {
 
     // for data persistence
     // EFFECTS: returns a JSONObject representing this anime, containing its attributes
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("name", name);
         json.put("genres", genre);

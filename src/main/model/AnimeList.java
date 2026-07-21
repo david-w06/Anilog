@@ -226,7 +226,7 @@ public class AnimeList {
 
     // for data persistence
     // EFFECTS: returns a JSONObject representing this anime list, containing a JSONArray of JSONObjects (animes)
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject json = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         

@@ -2,7 +2,11 @@ package ui;
 
 import model.Anime;
 import model.AnimeList;
+import persistence.JsonWriter;
+import persistence.JsonReader;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,13 +14,19 @@ import java.util.Scanner;
 // User interface for the app.
 // Currently only fufills the minimum of the user stories.
 public class AnimeApp {
+    private static final String LOCATION = "./data/animeList.json";
+
     private Scanner input;
     private AnimeList animeList;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
 
     // EFFECTS: runs the anime tracker application
     public AnimeApp() {
         input = new Scanner(System.in);
         animeList = new AnimeList();
+        jsonWriter = new JsonWriter(LOCATION);
+        jsonReader = new JsonReader(LOCATION);
         runAnimeApp();
     }
 
@@ -25,6 +35,7 @@ public class AnimeApp {
         boolean running = true;
 
         System.out.println("Welcome to Anilog!");
+        askLoad();
 
         while (running) {
             displayMenu();
@@ -33,6 +44,7 @@ public class AnimeApp {
 
             if (command.equals("quit")) {
                 running = false;
+                quit();
             } else {
                 processCommand(command);
             }
@@ -232,7 +244,7 @@ public class AnimeApp {
         }
     }
 
-    // EFFECTS: Print out all statistics
+    // EFFECTS: print out all statistics
     private void viewStats() {
         List<Anime> animes = animeList.getAnimes();
         if (animes.isEmpty()) {
@@ -265,5 +277,43 @@ public class AnimeApp {
         System.out.println("Total Time Watched: " + totalHours + " hours;" + "Overall Average Rating: " + avgRating);
         System.out.println("Top Genre: " + favGenre);
     }
+    
+    // EFFECTS: prompt user to save watch list
+    private void quit() {
+        System.out.println("Would you like to save your watch list? (Y/N)");
+        
+        while (true) {
+            String command = input.nextLine();
+        
+            if (command.equalsIgnoreCase("Y")) {
+                try {
+                    jsonWriter.open();
+                    jsonWriter.write(animeList);
+                    jsonWriter.close();
+                    System.out.println("Watch list successfully saved!");
+                } catch (FileNotFoundException e) {
+                    System.out.println("Unable to write to file to: " + LOCATION);
+                }
+                break;
+            } else if (command.equalsIgnoreCase("N")) {
+                break;
+            } else {
+                System.out.println("Please input Y or N");
+            }
+        }
+    }
 
+    // EFFECTS: prompt user to load their saved watch list
+    private void askLoad() {
+        System.out.print("Would you like to load your saved anime list? (Y/N): ");
+        String choice = input.nextLine();
+        if (choice.equalsIgnoreCase("Y")) {
+            try {
+                animeList = jsonReader.read();
+                System.out.println("Saved list successfully loaded");
+            } catch (IOException e) {
+                System.out.println("Unable to read from file: " + LOCATION);
+            }
+        }
+    }
 }
