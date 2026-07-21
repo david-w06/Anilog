@@ -21,3 +21,5 @@ As someone who enjoys watching and being emotionally attached to animes, I frequ
 * As a user, I want to be able to increment my watched episode count for a specific anime, having the application automatically flip its status to "Completed" if I hit the maximum episode count.
 * As a user, I want to view an automatically calculated statistics dashboard showing my total hours watched, overall average rating, and a breakdown of my top genres.
 * As a user, I want to request a personalized recommendation and output the top suggested titles based on my favorite genres.
+* As a user, I want to be able to optionally save my entire watchlist when I quit the application.
+* As a user, I want to be able to optionally load my saved application when I start up the application.
