@@ -1,12 +1,14 @@
 package persistence;
 
 import model.AnimeList;
+import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
 // represents a writer that writes JSON representations of anime list data to a target file
 public class JsonWriter {
 
+    private static final int TAB = 4;
     private String destination;
     private PrintWriter writer;
 
@@ -16,8 +18,15 @@ public class JsonWriter {
     }
     
     // EFFECTS: constructs writer that will write to destination file
-    public void write(AnimeList list){
-        //stub
+    public void write(AnimeList list) {
+        JSONObject json = list.toJson();
+        saveToFile(json.toString(TAB));
+
+    }
+
+    // EFFECTS: writes string to file
+    private void saveToFile(String json) {
+        writer.print(json);
     }
 
     // MODIFIES: this

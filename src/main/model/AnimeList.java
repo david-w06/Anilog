@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class AnimeList {
@@ -223,8 +224,17 @@ public class AnimeList {
         return result;
     }
 
+    // for data persistence
     // EFFECTS: returns a JSONObject representing this anime list, containing a JSONArray of JSONObjects (animes)
     public JSONObject toJson(){
-        return null; //stub
+        JSONObject json = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        
+        for (Anime anime : animes) {
+            jsonArray.put(anime.toJson());
+        }
+        
+        json.put("animes", jsonArray);
+        return json;    
     }
 }

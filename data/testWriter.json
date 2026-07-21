@@ -1,0 +1,30 @@
+{"animes": [
+    {
+        "note": "Masterpiece",
+        "seasons": 1,
+        "genres": [
+            "Fantasy",
+            "Adventure"
+        ],
+        "name": "Frieren",
+        "length": 28,
+        "rating": -1,
+        "currentEpisodeWatched": 0,
+        "priority": 1,
+        "status": "Not Watched"
+    },
+    {
+        "note": "Classic shonen",
+        "seasons": 5,
+        "genres": [
+            "Action",
+            "Adventure"
+        ],
+        "name": "Naruto",
+        "length": 100,
+        "rating": -1,
+        "currentEpisodeWatched": 0,
+        "priority": 2,
+        "status": "Watching"
+    }
+]}

@@ -15,8 +15,7 @@ public class JsonReaderTest {
 
     @Test
     public void testReaderAnimeList() throws IOException {
-        JsonReader reader =
-                new JsonReader("./data/testReaderGeneralAnimeList.json");
+        JsonReader reader = new JsonReader("./data/testReaderAnimeList.json");
 
         AnimeList list = reader.read();
 
@@ -45,7 +44,7 @@ public class JsonReaderTest {
 
     @Test
     public void testReaderNonExistentFile() {
-        JsonReader reader = new JsonReader("./data/noSuchFile.json");
+        JsonReader reader = new JsonReader("./data/invalidFile.json");
 
         assertThrows(IOException.class, () -> {
             reader.read();
@@ -54,8 +53,7 @@ public class JsonReaderTest {
 
     @Test
     public void testReaderEmptyAnimeList() throws IOException {
-        JsonReader reader =
-                new JsonReader("./data/testReaderEmptyAnimeList.json");
+        JsonReader reader = new JsonReader("./data/testReaderEmptyAnimeList.json");
 
         AnimeList list = reader.read();
 

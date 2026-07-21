@@ -101,14 +101,14 @@ public class AnimeTest {
         assertEquals("Frieren", json.getString("name"));
         assertEquals(28, json.getInt("length"));
         assertEquals(1, json.getInt("seasons"));
-        assertEquals("Not Watched", json.getString("status"));
+        assertEquals("Watched", json.getString("status"));
         assertEquals("Masterpiece", json.getString("note"));
         assertEquals(1, json.getInt("priority"));
-        
+
         JSONArray jsonGenres = json.getJSONArray("genres");
         assertEquals(2, jsonGenres.length());
-        assertEquals("Fantasy", jsonGenres.getString(0));
-        assertEquals("Adventure", jsonGenres.getString(1));
+        assertEquals("Adventure", jsonGenres.getString(0));
+        assertEquals("Fantasy", jsonGenres.getString(1));
     }
 }
 

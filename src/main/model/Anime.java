@@ -119,8 +119,19 @@ public class Anime {
         this.rating = rating;
     }
 
+    // for data persistence
     // EFFECTS: returns a JSONObject representing this anime, containing its attributes
     public JSONObject toJson(){
-        return null; //stub
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("genres", genre);
+        json.put("length", length);
+        json.put("seasons", seasons);
+        json.put("status", status);
+        json.put("note", note);
+        json.put("priority", priority);
+        json.put("currentEpisodeWatched", currentEpisodeWatched);
+        json.put("rating", rating);
+        return json;
     }
 }

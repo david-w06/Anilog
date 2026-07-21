@@ -259,6 +259,6 @@ public class AnimeListTest{
         assertEquals("Frieren", jsonFirstAnime.getString("name"));
 
         JSONObject jsonSecondAnime = jsonAnimeArray.getJSONObject(1);
-        assertEquals("Naruto", jsonFirstAnime.getString("name"));
+        assertEquals("Naruto", jsonSecondAnime.getString("name"));
     }
 }

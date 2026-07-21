@@ -52,12 +52,8 @@ public class JsonWriterTest {
         AnimeList returnedList = reader.read();
 
         assertEquals(2, returnedList.getAnimes().size());
-
-        assertEquals("Frieren",
-                returnedList.getAnimes().get(0).getName());
-
-        assertEquals("Naruto",
-                returnedList.getAnimes().get(1).getName());
+        assertEquals("Frieren", returnedList.getAnimes().get(0).getName());
+        assertEquals("Naruto", returnedList.getAnimes().get(1).getName());
     }
 
     @Test
@@ -73,7 +69,7 @@ public class JsonWriterTest {
 
     @Test
     public void testWriterInvalidFile() {
-        JsonWriter badWriter = new JsonWriter("./data/\0illegal:file.json");
+        JsonWriter badWriter = new JsonWriter("./data/\0invalid:file.json");
         assertThrows(IOException.class, () -> badWriter.open());
     }
 }
