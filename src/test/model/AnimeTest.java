@@ -1,5 +1,7 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -90,6 +92,23 @@ public class AnimeTest {
         assertEquals(3, testAnime.getPriority());
         testAnime.setPriority(1);
         assertEquals(1, testAnime.getPriority());
+    }
+
+    @Test
+    public void testToJson() {
+        JSONObject json = testAnime.toJson();
+
+        assertEquals("Frieren", json.getString("name"));
+        assertEquals(28, json.getInt("length"));
+        assertEquals(1, json.getInt("seasons"));
+        assertEquals("Not Watched", json.getString("status"));
+        assertEquals("Masterpiece", json.getString("note"));
+        assertEquals(1, json.getInt("priority"));
+        
+        JSONArray jsonGenres = json.getJSONArray("genres");
+        assertEquals(2, jsonGenres.length());
+        assertEquals("Fantasy", jsonGenres.getString(0));
+        assertEquals("Adventure", jsonGenres.getString(1));
     }
 }
 

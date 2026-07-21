@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.json.JSONObject;
 
 public class Anime {
     private String name;
@@ -116,5 +117,10 @@ public class Anime {
     // EFFECTS: updates the rating for the anime
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+    // EFFECTS: returns a JSONObject representing this anime, containing its attributes
+    public JSONObject toJson(){
+        return null; //stub
     }
 }

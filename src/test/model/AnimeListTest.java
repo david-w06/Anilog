@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AnimeListTest{
@@ -239,5 +242,23 @@ public class AnimeListTest{
         assertTrue(favorite.equals("Fantasy") || favorite.equals("Adventure"));
         assertNotEquals("Romance", favorite);
         assertNotEquals("Comedy", favorite);
+    }
+
+    @Test
+    public void testToJson() {
+        
+        testList.addAnime(frieren);
+        testList.addAnime(naruto);
+
+        JSONObject json = testList.toJson();
+
+        JSONArray jsonAnimeArray = json.getJSONArray("animes"); 
+        assertEquals(2, jsonAnimeArray.length());
+
+        JSONObject jsonFirstAnime = jsonAnimeArray.getJSONObject(0);
+        assertEquals("Frieren", jsonFirstAnime.getString("name"));
+
+        JSONObject jsonSecondAnime = jsonAnimeArray.getJSONObject(1);
+        assertEquals("Naruto", jsonFirstAnime.getString("name"));
     }
 }
