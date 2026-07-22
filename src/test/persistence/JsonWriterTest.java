@@ -72,4 +72,30 @@ public class JsonWriterTest {
         JsonWriter badWriter = new JsonWriter("./data/\0invalid:file.json");
         assertThrows(IOException.class, () -> badWriter.open());
     }
+
+    @Test
+    public void testCloseWhenWriterNull() {
+        JsonWriter writerNull = new JsonWriter("./data/testWriterNull.json");
+        // writer is null here as open() was never called
+        writerNull.close();
+        // Should not throw any exception
+    }
+
+    @Test
+    public void testWriterAnimeListWithEmptyGenres() throws IOException {
+        AnimeList list = new AnimeList();
+        Anime emptyGenreAnime = new Anime("No Genre", new ArrayList<>(), 10, 1, "Watching", "", 1);
+        list.addAnime(emptyGenreAnime);
+
+        writer.open();
+        writer.write(list);
+        writer.close();
+
+        AnimeList returnedList = reader.read();
+
+        assertEquals(1, returnedList.getAnimes().size());
+        Anime returnedAnime = returnedList.getAnimes().get(0);
+        assertEquals("No Genre", returnedAnime.getName());
+        assertTrue(returnedAnime.getGenre().isEmpty());
+    }
 }

@@ -77,7 +77,7 @@ public class AnimeApp {
         } else if (command.equals("modify")) {
             modifyAnime();
         } else if (command.equals("view")) {
-            displayNumberedAnimeList(animeList.getAnimes()); // using this instead of viewAnime() for now
+            viewAnime();
         } else if (command.equals("sort")) {
             sortAnime();
         } else if (command.equals("filter")) {
@@ -134,8 +134,18 @@ public class AnimeApp {
 
     // EFFECTS: removes an anime from the list
     private void removeAnime() {
-        // stub
-        System.out.println("Will be implemented later");
+        if (animeList.getAnimes().isEmpty()) {
+            System.out.println("Your list is empty!");
+            return;
+        }
+        displayNumberedAnimeList(animeList.getAnimes());
+        System.out.print("Select the number of the anime to remove (or 0 to cancel): ");
+        int choice = Integer.parseInt(input.nextLine());
+        if (choice != 0) {
+            Anime selected = animeList.getAnimes().get(choice - 1);
+            animeList.removeAnime(selected);
+            System.out.println("Successfully removed " + selected.getName());
+        }
     }
 
     // EFFECTS: modifies an existing anime
@@ -159,8 +169,21 @@ public class AnimeApp {
 
     // EFFECTS: displays every anime in the list
     private void viewAnime() {
-        // stub
-        System.out.println("Will be implemented later");
+        if (animeList.getAnimes().isEmpty()) {
+            System.out.println("Your watchlist is empty.");
+            return;
+        }
+        for (Anime a : animeList.getAnimes()) {
+            System.out.println("Name: " + a.getName());
+            System.out.println("Genres: " + String.join(", ", a.getGenre()));
+            System.out.println("Status: " + a.getStatus());
+            System.out.println("Progress: " + a.getCurrentEpisodeWatched() + "/" + a.getLength() + " episodes");
+            System.out.println("Seasons: " + a.getSeasons());
+            System.out.println("Priority: " + a.getPriority());
+            System.out.println("Rating: " + (a.getRating() == -1.0 ? "Unrated" : a.getRating()));
+            System.out.println("Note: " + a.getNote());
+            System.out.println("--------------------");
+        }
     }
 
     // EFFECTS: lets the user choose a sorting method
@@ -181,13 +204,28 @@ public class AnimeApp {
 
     // Stubs for specific sorting methods called by sortAnime()
     private void sortWatchlistByName() {
-        // stub
-        System.out.println("Will be implemented later");
+        List<Anime> sorted = animeList.sortByName();
+        if (sorted.isEmpty()) {
+            System.out.println("Your watchlist is empty.");
+            return;
+        }
+        System.out.println("\n--- Watchlist by Name ---");
+        for (Anime a : sorted) {
+            System.out.println(" - " + a.getName() + " (" + a.getStatus() + ")");
+        }
     }
 
     private void sortWatchlistByRating() {
-        // stub
-        System.out.println("Will be implemented later");
+        List<Anime> sorted = animeList.sortByRating();
+        if (sorted.isEmpty()) {
+            System.out.println("Your watchlist is empty.");
+            return;
+        }
+        System.out.println("\n--- Watchlist by Rating ---");
+        for (Anime a : sorted) {
+            String ratingStr = a.getRating() == -1.0 ? "Unrated" : String.valueOf(a.getRating());
+            System.out.println(" - " + a.getName() + " (Rating: " + ratingStr + ")");
+        }
     }
 
     // EFFECTS: Print out watchlist sorted by status
@@ -214,8 +252,38 @@ public class AnimeApp {
 
     // EFFECTS: lets the user filter the anime list
     private void filterAnime() {
-        // stub
-        System.out.println("Will be implemented later");
+        System.out.print("Filter by (Genre, Status, Season): ");
+        String choice = input.nextLine();
+        if (choice.equalsIgnoreCase("Genre")) {
+            System.out.print("Enter genre: ");
+            String genre = input.nextLine();
+            List<Anime> filtered = animeList.filterByGenre(genre);
+            if (filtered.isEmpty()) {
+                System.out.println("No matching anime found.");
+            } else {
+                displayNumberedAnimeList(filtered);
+            }
+        } else if (choice.equalsIgnoreCase("Status")) {
+            System.out.print("Enter status (Not Watched, Watching, Completed, Plan to Watch): ");
+            String status = input.nextLine();
+            List<Anime> filtered = animeList.filterByStatus(status);
+            if (filtered.isEmpty()) {
+                System.out.println("No matching anime found.");
+            } else {
+                displayNumberedAnimeList(filtered);
+            }
+        } else if (choice.equalsIgnoreCase("Season")) {
+            System.out.print("Enter number of seasons: ");
+            int seasons = Integer.parseInt(input.nextLine());
+            List<Anime> filtered = animeList.filterBySeasonCount(seasons);
+            if (filtered.isEmpty()) {
+                System.out.println("No matching anime found.");
+            } else {
+                displayNumberedAnimeList(filtered);
+            }
+        } else {
+            System.out.println("Invalid filter option.");
+        }
     }
 
     // EFFECTS: allows the user to choose a recommendation genre and recommends

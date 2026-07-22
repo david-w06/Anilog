@@ -51,6 +51,9 @@ public class AnimeTest {
         
         testAnime.setRating(10.0);
         assertEquals(10.0, testAnime.getRating(), 0.001);
+
+        testAnime.setRating(-1.0);
+        assertEquals(-1.0, testAnime.getRating(), 0.001);
     }
 
     @Test
@@ -104,6 +107,8 @@ public class AnimeTest {
         assertEquals("Watched", json.getString("status"));
         assertEquals("Masterpiece", json.getString("note"));
         assertEquals(1, json.getInt("priority"));
+        assertEquals(0, json.getInt("currentEpisodeWatched"));
+        assertEquals(-1.0, json.getDouble("rating"), 0.001);
 
         JSONArray jsonGenres = json.getJSONArray("genres");
         assertEquals(2, jsonGenres.length());

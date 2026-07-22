@@ -261,4 +261,135 @@ public class AnimeListTest{
         JSONObject jsonSecondAnime = jsonAnimeArray.getJSONObject(1);
         assertEquals("Naruto", jsonSecondAnime.getString("name"));
     }
+
+    @Test
+    public void testSortByStatusAllCombinations() {
+        List<String> emptyGenres = new ArrayList<>();
+        Anime watching = new Anime("A", emptyGenres, 10, 1, "Watching", "", 1);
+        Anime planToWatch = new Anime("B", emptyGenres, 10, 1, "Plan to Watch", "", 2);
+        Anime completed = new Anime("C", emptyGenres, 10, 1, "Completed", "", 3);
+        Anime notWatched = new Anime("D", emptyGenres, 10, 1, "Not Watched", "", 4);
+
+        // Permutation 1
+        AnimeList list1 = new AnimeList();
+        list1.addAnime(notWatched);
+        list1.addAnime(planToWatch);
+        list1.addAnime(completed);
+        list1.addAnime(watching);
+
+        List<Anime> sorted1 = list1.sortByStatus();
+        assertEquals(watching, sorted1.get(0));
+        assertEquals(planToWatch, sorted1.get(1));
+        assertEquals(completed, sorted1.get(2));
+        assertEquals(notWatched, sorted1.get(3));
+
+        // Permutation 2
+        AnimeList list2 = new AnimeList();
+        list2.addAnime(completed);
+        list2.addAnime(notWatched);
+        list2.addAnime(watching);
+        list2.addAnime(planToWatch);
+
+        List<Anime> sorted2 = list2.sortByStatus();
+        assertEquals(watching, sorted2.get(0));
+        assertEquals(planToWatch, sorted2.get(1));
+        assertEquals(completed, sorted2.get(2));
+        assertEquals(notWatched, sorted2.get(3));
+    }
+
+    @Test
+    public void testSortByRatingWithNegativeRatingBranch() {
+        List<String> emptyGenres = new ArrayList<>();
+        AnimeList list = new AnimeList();
+        Anime unrated = new Anime("Unrated", emptyGenres, 10, 1, "Plan to Watch", "", 1); // rating -1.0
+        Anime invalidNegative = new Anime("Negative", emptyGenres, 10, 1, "Plan to Watch", "", 2);
+        invalidNegative.setRating(-2.0); // violates requires clause, but triggers the branch
+
+        list.addAnime(unrated);
+        list.addAnime(invalidNegative);
+
+        List<Anime> sorted = list.sortByRating();
+        assertEquals(2, sorted.size());
+        assertEquals(invalidNegative, sorted.get(0));
+        assertEquals(unrated, sorted.get(1));
+    }
+
+    @Test
+    public void testCalculateFavoriteGenreWithEmptyGenres() {
+        AnimeList list = new AnimeList();
+        Anime emptyGenreAnime = new Anime("No Genre", new ArrayList<>(), 10, 1, "Watching", "", 1);
+        emptyGenreAnime.setCurrentEpisodeWatched(5);
+        emptyGenreAnime.setRating(8.0);
+        list.addAnime(emptyGenreAnime);
+        assertNull(list.calculateFavoriteGenre());
+    }
+
+    @Test
+    public void testCalculateFavoriteGenreAllUnrated() {
+        List<String> genres = new ArrayList<>();
+        genres.add("Adventure");
+        AnimeList list = new AnimeList();
+        Anime anime1 = new Anime("Anime 1", genres, 10, 1, "Watching", "", 1);
+        anime1.setCurrentEpisodeWatched(5);
+        // rating is -1.0
+        list.addAnime(anime1);
+        assertNull(list.calculateFavoriteGenre());
+    }
+
+    @Test
+    public void testGetTopRecommendationsMoreThanThree() {
+        AnimeList list = new AnimeList();
+        List<String> genres = new ArrayList<>();
+        genres.add("Adventure");
+        
+        Anime a1 = new Anime("A1", genres, 10, 1, "Plan to Watch", "", 5);
+        Anime a2 = new Anime("A2", genres, 10, 1, "Plan to Watch", "", 1);
+        Anime a3 = new Anime("A3", genres, 10, 1, "Plan to Watch", "", 4);
+        Anime a4 = new Anime("A4", genres, 10, 1, "Plan to Watch", "", 2);
+        Anime a5 = new Anime("A5", genres, 10, 1, "Plan to Watch", "", 3);
+        
+        list.addAnime(a1);
+        list.addAnime(a2);
+        list.addAnime(a3);
+        list.addAnime(a4);
+        list.addAnime(a5);
+        
+        List<Anime> recs = list.getTopRecommendations("Adventure");
+        assertEquals(3, recs.size());
+        assertEquals(a2, recs.get(0)); // priority 1
+        assertEquals(a4, recs.get(1)); // priority 2
+        assertEquals(a5, recs.get(2)); // priority 3
+    }
+
+    @Test
+    public void testGetTopRecommendationsNoMatch() {
+        testList.addAnime(frieren);  // Fantasy, Adventure
+        testList.addAnime(naruto);   // Action, Adventure
+
+        List<Anime> recs = testList.getTopRecommendations("Romance");
+        assertEquals(0, recs.size());
+    }
+
+    @Test
+    public void testCalculateTotalWatchTimeEmptyList() {
+        assertEquals(0, testList.calculateTotalWatchTime());
+    }
+
+    // calculateFavoriteGenre where genreScores.containsKey(genre) == true
+    // i.e., two anime share a genre so the second one skips the initializing put
+    @Test
+    public void testCalculateFavoriteGenreSharedGenre() {
+        testList.addAnime(frieren);  // Fantasy, Adventure
+        testList.addAnime(naruto);   // Action, Adventure
+
+        frieren.setCurrentEpisodeWatched(10);
+        frieren.setRating(9.0);
+
+        naruto.setCurrentEpisodeWatched(10);
+        naruto.setRating(8.0);
+
+        // returns true and the initialising put(0.0) is skipped; scores accumulate
+        String favorite = testList.calculateFavoriteGenre();
+        assertEquals("Adventure", favorite);
+    }
 }
