@@ -23,3 +23,18 @@ As someone who enjoys watching and being emotionally attached to animes, I frequ
 * As a user, I want to request a personalized recommendation and output the top suggested titles based on my favorite genres.
 * As a user, I want to be able to optionally save my entire watchlist when I quit the application.
 * As a user, I want to be able to optionally load my saved application when I start up the application.
+
+
+# Instruction for End user
+
+* You can view the panel that displays the animes that have already been added to the anime watch list by clicking on the "Watchlist" tab in the main sidebar menu.
+
+* You can generate the first required action related to the user story "adding multiple animes to an anime watch list" by going to the "Watchlist" panel, clicking the "+ Add Anime" button in the bottom bar, entering the anime details into the popup dialog, and clicking "OK".
+
+* You can generate the second required action related to the user story "adding multiple animes to an anime watch list" by doing the previous step multiple times.
+
+* You can locate the visual component by viewing the custom rendered cover art images and dynamic canvas vector placeholders displayed at the top of each card in the "Anime Base" panel.
+
+* You can save the state of the application by selecting the "Save Watchlist" button in the settings.
+
+* You can reload the state of my application by selecting the "Load Watchlist" button in the settings.
