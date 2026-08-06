@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 // User interface for the app.
 // Currently only fufills the minimum of the user stories.
-public class AnimeApp {
+public class AnimeConsoleUI {
     private static final String LOCATION = "./data/animeList.json";
 
     private Scanner input;
@@ -22,7 +22,7 @@ public class AnimeApp {
     private JsonReader jsonReader;
 
     // EFFECTS: runs the anime tracker application
-    public AnimeApp() {
+    public AnimeConsoleUI() {
         input = new Scanner(System.in);
         animeList = new AnimeList();
         jsonWriter = new JsonWriter(LOCATION);
@@ -251,6 +251,7 @@ public class AnimeApp {
     }
 
     // EFFECTS: lets the user filter the anime list
+    @SuppressWarnings("methodlength")
     private void filterAnime() {
         System.out.print("Filter by (Genre, Status, Season): ");
         String choice = input.nextLine();

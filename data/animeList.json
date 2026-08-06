@@ -1,11 +1,1 @@
-{"animes": [{
-    "note": "1",
-    "seasons": 1,
-    "genres": ["1"],
-    "name": "1",
-    "length": 1,
-    "rating": -1,
-    "currentEpisodeWatched": 0,
-    "priority": 1,
-    "status": "11"
-}]}
+{"animes": []}
