@@ -7,6 +7,7 @@ import java.util.List;
 import model.Anime;
 import model.AnimeList;
 
+// JPanel that represents the tab for recommendation
 public class RecommendationPanel extends JPanel {
 
     private AnimeList animeList;

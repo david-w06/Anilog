@@ -10,6 +10,7 @@ import java.util.List;
 import model.Anime;
 import model.AnimeList;
 
+// JPanel that represents the tab for the watchlist tab
 public class WatchListPanel extends JPanel {
 
     private AnimeList animeList;

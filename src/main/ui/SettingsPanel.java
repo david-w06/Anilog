@@ -11,6 +11,7 @@ import model.AnimeList;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
+// JPanel that represents the tab for settings
 public class SettingsPanel extends JPanel {
 
     private AnimeList activeAnimeList;

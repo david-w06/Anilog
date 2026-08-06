@@ -5,6 +5,7 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.*;
 import java.io.InputStream;
 
+// Contains method for making themed GUI elemenet  
 public class Theme {
 
     // Color Palette

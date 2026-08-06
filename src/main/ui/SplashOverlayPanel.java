@@ -11,6 +11,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 
+// JPanel that represents a temporary top layer intro animation
 public class SplashOverlayPanel extends JPanel {
 
     private final int cornerRadius;

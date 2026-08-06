@@ -9,6 +9,7 @@ import java.util.List;
 import model.Anime;
 import model.AnimeList;
 
+// JPanel that represents the tab for anime base
 public class AnimeBasePanel extends JPanel {
 
     private AnimeList activeWatchList;

@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import model.AnimeList;
 
+// JPanel that represents the tab for statistics
 public class StatisticsPanel extends JPanel {
 
     private AnimeList animeList;

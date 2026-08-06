@@ -10,6 +10,7 @@ import java.io.File;
 import model.AnimeList;
 import persistence.JsonWriter;
 
+// Main background JFrame that holds all panels
 public class MainWindow extends JFrame {
     
     private static final String JSON_STORE = "./data/animeList.json";

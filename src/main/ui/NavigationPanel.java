@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.function.Consumer;
 
+// JPanel that represents the navigation bar
 public class NavigationPanel extends JPanel {
 
     private Consumer<String> onTabSelected;
