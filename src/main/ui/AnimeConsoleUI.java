@@ -323,7 +323,7 @@ public class AnimeConsoleUI {
 
         int totalHours = animeList.calculateTotalWatchTime();
 
-        // Calculate average rating
+        // calculate average rating
         double totalRatingSum = 0;
         int ratedCount = 0;
         for (Anime a : animes) {
@@ -340,7 +340,7 @@ public class AnimeConsoleUI {
             avgRating = totalRatingSum / ratedCount;
         }
 
-        // Find favorite genre
+        // find favorite genre
         String favGenre = animeList.calculateFavoriteGenre();
 
         System.out.println("Total Time Watched: " + totalHours + " hours;" + "Overall Average Rating: " + avgRating);

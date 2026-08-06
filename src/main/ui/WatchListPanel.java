@@ -52,7 +52,9 @@ public class WatchListPanel extends JPanel {
         topBar.add(pageTitle);
 
         JLabel filterLabel = Theme.makeBodyLabel("Filter:", Theme.TEXT_DIM);
-        filterBox = makeStyledComboBox(new String[]{"All Statuses", "Watching", "Plan to Watch", "Completed"});
+        
+        filterBox = makeStyledComboBox(new String[]{"All Statuses", "Not Watched", 
+            "Watching", "Plan to Watch", "Completed"});
         filterBox.addActionListener(e -> refreshList());
 
         JLabel sortLabel = Theme.makeBodyLabel("Sort:", Theme.TEXT_DIM);
@@ -301,7 +303,12 @@ public class WatchListPanel extends JPanel {
                     throw new IllegalArgumentException("Episodes must be between 0 and total length.");
                 }
                 selected.setCurrentEpisodeWatched(newEp);
-                selected.setStatus((String) statusBox.getSelectedItem());
+                
+                if (newEp == selected.getLength()) {
+                    selected.setStatus("Completed");
+                } else {
+                    selected.setStatus((String) statusBox.getSelectedItem());
+                }
 
                 String ratingInput = ratingField.getText().trim();
                 if (ratingInput.isEmpty()) {
@@ -377,7 +384,7 @@ public class WatchListPanel extends JPanel {
         private final JLabel statusBadge = new JLabel();
 
         // MODIFIES: this
-        // EFFECTS: constructs custom cell renderer layout, initializes fonts, status badge borders, and panel structure
+        // EFFECTS: constructs custom cell renderer layout, initializes fonts, status badge, and panel structure
         @SuppressWarnings("methodlength")
         public AnimeListCellRenderer() {
             setLayout(new BorderLayout(8, 0));
@@ -390,7 +397,7 @@ public class WatchListPanel extends JPanel {
             nameLabel.setFont(Theme.FONT_BODY.deriveFont(Font.BOLD, 13f));
             detailLabel.setFont(Theme.FONT_SMALL);
 
-            // Status badge styling — rounded look via HTML + padding
+            // status badge
             statusBadge.setFont(Theme.FONT_SMALL.deriveFont(10f));
             statusBadge.setOpaque(true);
             statusBadge.setBorder(BorderFactory.createEmptyBorder(3, 9, 3, 9));

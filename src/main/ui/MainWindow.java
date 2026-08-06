@@ -52,25 +52,25 @@ public class MainWindow extends JFrame {
         //set layout
         setLayout(new BorderLayout());
 
-        // Setup CardLayout container
+        // setup CardLayout container
         cardLayout = new CardLayout();
         contentContainer = new JPanel(cardLayout);
 
-        // Instantiate each distinct panel subclass with central refresh trigger
+        // instantiate each distinct panel subclass with central refresh trigger
         watchListPanel = new WatchListPanel(animeList, this::refreshAllPanels);
         statisticsPanel = new StatisticsPanel(animeList);
         recommendationPanel = new RecommendationPanel(animeList);
         animeBasePanel = new AnimeBasePanel(animeList, this::refreshAllPanels);
         settingsPanel = new SettingsPanel(animeList, this::refreshAllPanels);
 
-        // Add panel instances to the container with string keys
+        // add panel instances to the container with string keys
         contentContainer.add(watchListPanel, "WATCHLIST");
         contentContainer.add(recommendationPanel, "RECOMMENDATIONS");
         contentContainer.add(statisticsPanel, "STATISTICS");
         contentContainer.add(animeBasePanel, "ANIME_BASE");
         contentContainer.add(settingsPanel, "SETTINGS");
 
-        // Pass a tab-switching callback to the navigation bar, updating tabs on switch
+        // pass a tab-switching callback to the navigation bar, updating tabs on switch
         navigationPanel = new NavigationPanel(tabKey -> {
             cardLayout.show(contentContainer, tabKey);
             refreshAllPanels();
@@ -79,7 +79,7 @@ public class MainWindow extends JFrame {
         add(navigationPanel, BorderLayout.WEST);
         add(contentContainer, BorderLayout.CENTER);
 
-        // Make window draggable via navigation panel
+        // make window draggable via navigation panel
         makeDraggable(navigationPanel);
 
         //keep at the end

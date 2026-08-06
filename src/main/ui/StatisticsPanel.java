@@ -28,7 +28,7 @@ public class StatisticsPanel extends JPanel {
         setLayout(new BorderLayout(0, 0));
         setBackground(Theme.BG_DARK);
 
-        // Hedaer
+        // Header
         JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 16));
         header.setBackground(Theme.PANEL_BG);
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Theme.BORDER_DIM));
@@ -93,7 +93,7 @@ public class StatisticsPanel extends JPanel {
         titleRow.add(iconLabel);
         titleRow.add(titleLabel);
 
-        // Value label — large and pink
+        // Value label
         valueLabel.setFont(Theme.FONT_TITLE.deriveFont(22f));
         valueLabel.setForeground(Theme.ACCENT_PINK);
         valueLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
