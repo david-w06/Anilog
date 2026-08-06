@@ -152,7 +152,7 @@ public class WatchListPanel extends JPanel {
                 lbl.setForeground(isSelected ? Color.WHITE : Theme.TEXT_LIGHT);
                 lbl.setFont(Theme.FONT_BODY.deriveFont(11f));
                 lbl.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
-                return lbl;
+                return lbl; 
             }
         });
         return box;

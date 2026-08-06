@@ -43,6 +43,7 @@ public class MainWindow extends JFrame {
         setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
+        // Overrides Swing's default behavior EXIT_ON_CLOSE 
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -90,10 +91,6 @@ public class MainWindow extends JFrame {
         startSplashAnimation();
     }
 
-    
-    
-    
-    
     // EFFECTS: allows component to be dragged
     private void makeDraggable(Component component) {
         component.addMouseListener(new java.awt.event.MouseAdapter() {
