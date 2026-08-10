@@ -61,3 +61,6 @@ Updated priority for Fullmetal Alchemist: Brotherhood to 2.
 Sun Aug 09 19:33:37 PDT 2026
 Removed anime: Fullmetal Alchemist: Brotherhood from watchlist.
 ```
+
+### Phase 4: Task 3
+One of the main issue I had with the design of this project with the cumbersome and time consuming procedure of developing panels for the GUI. However, most panels share the same structure: they take an AnimeList, build a themed layout, and refresh when data changes. In the diagram, they appear as separate classes with similar associations but no shared supertype type. I would refactor by introducing an abstract base class that holds the shared AnimeList reference and refresh logic. Subclasses would only implement panel-specific behaviour. This would reduce duplicated code  like scroll bar styling, header layout, etc. and make the UI package easier to extend with new tabs.
