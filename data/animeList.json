@@ -1,38 +1,11 @@
-{"animes": [
-    {
-        "note": "",
-        "seasons": 1,
-        "genres": ["Action"],
-        "name": "1",
-        "length": 12,
-        "rating": -1,
-        "currentEpisodeWatched": 0,
-        "priority": 3,
-        "status": "Not Watched"
-    },
-    {
-        "note": "",
-        "seasons": 1,
-        "genres": [
-            "Action",
-            "Comedy"
-        ],
-        "name": "2",
-        "length": 12,
-        "rating": -1,
-        "currentEpisodeWatched": 0,
-        "priority": 2,
-        "status": "Not Watched"
-    },
-    {
-        "note": "",
-        "seasons": 1,
-        "genres": ["Romance"],
-        "name": "3",
-        "length": 12,
-        "rating": -1,
-        "currentEpisodeWatched": 0,
-        "priority": 1,
-        "status": "Not Watched"
-    }
-]}
+{"animes": [{
+    "note": "",
+    "seasons": 1,
+    "genres": ["Action"],
+    "name": "Naruto",
+    "length": 12,
+    "rating": 10,
+    "currentEpisodeWatched": 12,
+    "priority": 1,
+    "status": "Completed"
+}]}

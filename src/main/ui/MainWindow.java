@@ -8,6 +8,8 @@ import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 
 import model.AnimeList;
+import model.Event;
+import model.EventLog;
 import persistence.JsonWriter;
 
 // Main background JFrame that holds all panels
@@ -144,9 +146,12 @@ public class MainWindow extends JFrame {
         if (choice == JOptionPane.YES_OPTION) {
             saveWatchList();
             dispose();
+            //print exit log
+            printLog(EventLog.getInstance());
             System.exit(0);
         } else if (choice == JOptionPane.NO_OPTION) {
             dispose();
+            printLog(EventLog.getInstance());
             System.exit(0);
         }
     }
@@ -184,4 +189,10 @@ public class MainWindow extends JFrame {
             splashPanel.setVisible(false); 
         });
     }
+    // EFFECTS: prints all logged events.
+    public void printLog(EventLog el) {
+    for (Event next : el) {
+        System.out.println(next.toString());
+    }
+}
 }

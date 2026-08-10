@@ -69,32 +69,52 @@ public class Anime {
         return rating;
     }
 
-    // ================= Mutators =================
+// ================= Mutators =================
 
     // REQUIRES: season > 0
     // MODIFIES: this
     // EFFECTS: sets a season number for the anime
     public void setSeasons(int season) {
-        this.seasons = season;
+        if (this.seasons != season) {
+            this.seasons = season;
+            EventLog.getInstance().logEvent(
+                new Event("Updated season count for " + name + " to " + season + ".")
+            );
+        }
     }
 
     // REQUIRES: status is one of "Not Watched", "Watching", "Completed", or "Plan to Watch"
     // MODIFIES: this
     // EFFECTS: sets a new watch status for the anime
     public void setStatus(String status) {
-        this.status = status;
+        if (!this.status.equals(status)) {
+            this.status = status;
+            EventLog.getInstance().logEvent(
+                new Event("Updated status for " + name + " to " + status + ".")
+            );
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: updates the personal notes for the anime
     public void setNote(String note) {
-        this.note = note;
+        if (!this.note.equals(note)) {
+            this.note = note;
+            EventLog.getInstance().logEvent(
+                new Event("Updated note for " + name + ".")
+            );
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: updates the priority ranking for the anime
     public void setPriority(int priority) {
-        this.priority = priority;
+        if (this.priority != priority) {
+            this.priority = priority;
+            EventLog.getInstance().logEvent(
+                new Event("Updated priority for " + name + " to " + priority + ".")
+            );
+        }
     }
 
     // REQUIRES: 0 <= episode <= length
@@ -102,12 +122,18 @@ public class Anime {
     // EFFECTS: updates the current episode progress tracker, if current == total episode, flip status to Completed.
     // Flips to Not Watched if current ep is 0, user can still change status on its own.
     public void setCurrentEpisodeWatched(int episode) {
-        this.currentEpisodeWatched = episode;
-        if (this.currentEpisodeWatched == length) {
-            status = "Completed"; 
-        }
-        if (this.currentEpisodeWatched == 0) {
-            status = "Not Watched"; 
+        if (this.currentEpisodeWatched != episode) {
+            this.currentEpisodeWatched = episode;
+            if (this.currentEpisodeWatched == length) {
+                status = "Completed"; 
+            }
+            if (this.currentEpisodeWatched == 0) {
+                status = "Not Watched"; 
+            }
+            
+            EventLog.getInstance().logEvent(
+                new Event("Updated episode progress for " + name + " to episode " + episode + ".")
+            );
         }
     }
 
@@ -115,7 +141,12 @@ public class Anime {
     // MODIFIES: this
     // EFFECTS: updates the rating for the anime
     public void setRating(double rating) {
-        this.rating = rating;
+        if (this.rating != rating) {
+            this.rating = rating;
+            EventLog.getInstance().logEvent(
+                new Event("Updated rating for " + name + " to " + rating + "/10.0.")
+            );
+        }
     }
 
     // for data persistence

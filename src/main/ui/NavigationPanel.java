@@ -110,12 +110,17 @@ public class NavigationPanel extends JPanel {
     }
 
     // MODIFIES: this
-    // EFFECTS: dispatches window closing event to ancestor window, or exits system if window is null.
+    // EFFECTS: dispatches window closing event to ancestor window, 
+    //          or prints event log and exits system if window is null.
     private void handleQuit() {
         Window window = SwingUtilities.getWindowAncestor(this);
         if (window != null) {
             window.dispatchEvent(new java.awt.event.WindowEvent(window, java.awt.event.WindowEvent.WINDOW_CLOSING));
         } else {
+            // Ensure EventLog prints even if window reference is lost
+            for (model.Event event : model.EventLog.getInstance()) {
+                System.out.println(event.toString());
+            }
             System.exit(0);
         }
     }

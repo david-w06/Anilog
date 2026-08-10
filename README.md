@@ -38,3 +38,26 @@ As someone who enjoys watching and being emotionally attached to animes, I frequ
 * You can save the state of the application by selecting the "Save Watchlist" button in the settings.
 
 * You can reload the state of my application by selecting the "Load Watchlist" button in the settings.
+
+### Phase 4: Task 2, Event Log Sample
+
+```text
+Sun Aug 09 19:33:02 PDT 2026
+Added anime: Naruto to watchlist.
+Sun Aug 09 19:33:07 PDT 2026
+Updated episode progress for Naruto to episode 12.
+Sun Aug 09 19:33:13 PDT 2026
+Updated rating for Naruto to 10.0/10.0.
+Sun Aug 09 19:33:14 PDT 2026
+Added anime: Fullmetal Alchemist: Brotherhood to watchlist.
+Sun Aug 09 19:33:32 PDT 2026
+Updated episode progress for Fullmetal Alchemist: Brotherhood to episode 5.
+Sun Aug 09 19:33:32 PDT 2026
+Updated status for Fullmetal Alchemist: Brotherhood to Watching.
+Sun Aug 09 19:33:32 PDT 2026
+Updated note for Fullmetal Alchemist: Brotherhood.
+Sun Aug 09 19:33:32 PDT 2026
+Updated priority for Fullmetal Alchemist: Brotherhood to 2.
+Sun Aug 09 19:33:37 PDT 2026
+Removed anime: Fullmetal Alchemist: Brotherhood from watchlist.
+```

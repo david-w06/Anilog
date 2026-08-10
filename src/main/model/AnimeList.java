@@ -22,15 +22,20 @@ public class AnimeList {
     // EFFECTS: adds an anime to the watchlist
     public void addAnime(Anime anime) {
         animes.add(anime);
+        EventLog.getInstance().logEvent(
+            new Event("Added anime: " + anime.getName() + " to watchlist.")
+        );
     }
 
     // MODIFIES: this
     // EFFECTS: removes the specified anime from the watchlist if present
     public void removeAnime(Anime anime) {
         animes.remove(anime);
+        EventLog.getInstance().logEvent(
+            new Event("Removed anime: " + anime.getName() + " from watchlist.")
+        );
     }
 
-    // MODIFIES: this
     // EFFECTS: returns the list of anime stored
     public List<Anime> getAnimes() {
         return animes;
@@ -47,6 +52,9 @@ public class AnimeList {
                 filteredList.add(anime);
             }
         } 
+        EventLog.getInstance().logEvent(
+            new Event("Filtered watchlist by genre: " + targetGenre)
+        );
         return filteredList;
     }
 
@@ -82,7 +90,6 @@ public class AnimeList {
     public List<Anime> sortByName() {
         List<Anime> sortedList = new ArrayList<>(animes);
         // selection sort algorithm
-        // use a nested loop to find the smallest name among the indexes we haven't sorted
         for (int i = 0; i < sortedList.size(); i++) {
             int smallestIndex = i;
 
@@ -93,7 +100,6 @@ public class AnimeList {
                 }
             }
 
-            // swap the current and early-most index with the smallest name
             Anime temp = sortedList.get(i);
             sortedList.set(i, sortedList.get(smallestIndex));
             sortedList.set(smallestIndex, temp);
@@ -105,7 +111,6 @@ public class AnimeList {
     //          unrated anime (rating == -1.0) are placed at the bottom
     public List<Anime> sortByRating() {
         List<Anime> sortedList = new ArrayList<>(animes);
-        // selection sort again
         for (int i = 0; i < sortedList.size(); i++) {
             int highestIndex = i;
 
@@ -119,7 +124,6 @@ public class AnimeList {
                     highestIndex = j;
                 }
             }
-            //swap the highest among the remainings to the front
             Anime temp = sortedList.get(i);
             sortedList.set(i, sortedList.get(highestIndex));
             sortedList.set(highestIndex, temp);
@@ -128,12 +132,10 @@ public class AnimeList {
         return sortedList;
     }
 
-
-    //EFFECTS: return a new list of anime sorted by their status in the order below
+    // EFFECTS: return a new list of anime sorted by their status in the order below
     public List<Anime> sortByStatus() { // Watching -> Plan to Watch -> Completed -> Not Watched
         List<Anime> sorted = new ArrayList<>(animes);
 
-        // Same selection sort algorithm that compares based on the given order
         for (int i = 0; i < sorted.size(); i++) {
             int lowest = i;
             for (int j = i + 1; j < sorted.size(); j++) {
@@ -170,18 +172,17 @@ public class AnimeList {
         if (animes.isEmpty()) {
             return null;
         }
-        Map<String, Double> genreScores = new HashMap<>(); // using a hashmap to store all genres and their scores
+        Map<String, Double> genreScores = new HashMap<>(); 
         for (Anime anime : animes) {
-            // score = time watched*rating
             double score = anime.getCurrentEpisodeWatched() * anime.getRating(); 
             for (String genre : anime.getGenre()) {
                 if (!genreScores.containsKey(genre)) {
-                    genreScores.put(genre, 0.0); // create a pair for the genre if it doesn't exist
+                    genreScores.put(genre, 0.0); 
                 }
-                genreScores.put(genre, genreScores.get(genre) + score); //add the anime's score contribution to genre
+                genreScores.put(genre, genreScores.get(genre) + score); 
             }
         }
-        // compare all pairs and extract the one with the highest genereScore
+
         String favorite = null;
         double highest = -1;
         for (String genre : genreScores.keySet()) {
@@ -193,17 +194,16 @@ public class AnimeList {
         return favorite;
     }
 
-    // EFFECTS: runs a algorithm over "Plan to Watch" anime, 
+    // EFFECTS: runs an algorithm over "Plan to Watch" anime, 
     //          ranking them by priority and genre preferences, and returns the top 3 recommendations
     public List<Anime> getTopRecommendations(String favoriteGenre) {
         List<Anime> recommendations = new ArrayList<>();
-        // Obtaining all entries with the target genre
         for (Anime anime : animes) {
             if (anime.getGenre().contains(favoriteGenre)) {
                 recommendations.add(anime);
             }
         }
-        // Run selection sort over recommendation to put the top 3 priority at the beginning
+
         for (int i = 0; i < recommendations.size(); i++) {
             int highestIndex = i;
             for (int j = i + 1; j < recommendations.size(); j++) {
@@ -216,7 +216,7 @@ public class AnimeList {
             recommendations.set(i, recommendations.get(highestIndex));
             recommendations.set(highestIndex, temp);
         }
-        // Return the first 3 recommendations or the entire list if list size < 3
+
         List<Anime> result = new ArrayList<>();
         for (int i = 0; i < Math.min(3, recommendations.size()); i++) {
             result.add(recommendations.get(i));
