@@ -137,4 +137,75 @@ public class Theme {
         lbl.setForeground(color);
         return lbl;
     }
+    
+    // REQUIRES: field != null
+    // EFFECTS: construct a themed text field for dialog
+    public static void styleTextField(JTextField field) {
+        field.setFont(FONT_BODY);
+        field.setForeground(TEXT_LIGHT);
+        field.setBackground(PANEL_BG2);
+        field.setCaretColor(ACCENT_PINK);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_DIM),
+                BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
+    }
+    
+        // REQUIRES: comboBox != null
+    // EFFECTS: construct a themed combo box for dialog
+    public static void styleComboBox(JComboBox<?> comboBox) {
+        comboBox.setFont(FONT_BODY);
+        comboBox.setForeground(TEXT_LIGHT);
+        comboBox.setBackground(PANEL_BG2);
+        comboBox.setBorder(BorderFactory.createLineBorder(BORDER_DIM));
+    }
+
+    // REQUIRES: label != null
+    // EFFECTS: construct a themed label for dialog
+    public static void styleDialogLabel(JLabel label) {
+        label.setFont(FONT_BODY);
+        label.setForeground(TEXT_LIGHT);
+    }
+
+    // REQUIRES: container != null
+    // EFFECTS: construct themed buttons for dialog
+    public static void styleDialogButtons(Container container) {
+        for (Component component : container.getComponents()) {
+
+            if (component instanceof JButton) {
+                JButton button = (JButton) component;
+
+                button.setFont(FONT_BODY.deriveFont(11f));
+                button.setForeground(Color.WHITE);
+                button.setBackground(ACCENT_PINK);
+
+                button.setFocusPainted(false);
+                button.setBorderPainted(false);
+                button.setContentAreaFilled(true);
+                button.setOpaque(true);
+
+                button.setBorder(
+                        BorderFactory.createEmptyBorder(8, 18, 8, 18)
+                );
+            }
+
+            if (component instanceof Container) {
+                styleDialogButtons((Container) component);
+            }
+        }
+    }
+
+    // REQUIRES: container != null
+    // EFFECTS: recursively set all JPanels in the target container to dark theme leaving out buttons
+    public static void styleDialogBackground(Container container) {
+        if (!(container instanceof JButton)) {
+            container.setBackground(BG_DARK);
+        }
+
+        for (Component component : container.getComponents()) {
+            if (component instanceof Container) {
+                styleDialogBackground((Container) component);
+            }
+        }
+    }
 }

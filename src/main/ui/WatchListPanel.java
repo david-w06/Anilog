@@ -113,6 +113,7 @@ public class WatchListPanel extends JPanel {
     @SuppressWarnings("methodlength")
     private JComboBox<String> makeStyledComboBox(String[] items) {
         JComboBox<String> box = new JComboBox<>(items);
+        box.setOpaque(true);
         box.setBackground(Theme.PANEL_BG);
         box.setForeground(Theme.ACCENT_PINK);
         box.setFont(Theme.FONT_BODY.deriveFont(Font.BOLD, 11f));
@@ -122,6 +123,48 @@ public class WatchListPanel extends JPanel {
         ));
         box.setUI(new BasicComboBoxUI() {
             @Override
+            public void paintCurrentValueBackground(
+                    Graphics g, Rectangle bounds, boolean hasFocus) {
+                // Paint the current value background with our dark theme.
+                g.setColor(Theme.PANEL_BG);
+                g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+            }
+
+            @Override
+            public void paintCurrentValue(
+                    Graphics g, Rectangle bounds, boolean hasFocus) {
+
+                ListCellRenderer<Object> renderer = (ListCellRenderer<Object>) comboBox.getRenderer();
+
+                Component c = renderer.getListCellRendererComponent(
+                        new JList<>(),
+                        comboBox.getSelectedItem(),
+                        -1,
+                        false,       // don't treat closed box as selected
+                        false
+                );
+
+                c.setBackground(Theme.PANEL_BG);
+                c.setForeground(Theme.TEXT_LIGHT);
+
+                if (c instanceof JLabel) {
+                    JLabel label = (JLabel) c;
+                    label.setOpaque(true);
+                }
+
+                SwingUtilities.paintComponent(
+                        g,
+                        c,
+                        comboBox,
+                        bounds.x,
+                        bounds.y,
+                        bounds.width,
+                        bounds.height
+                );
+            }
+
+            
+            @Override
             protected JButton createArrowButton() {
                 JButton btn = new JButton() {
                     @Override
@@ -129,11 +172,19 @@ public class WatchListPanel extends JPanel {
                         Graphics2D g2 = (Graphics2D) g.create();
                         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                         g2.setColor(Theme.ACCENT_PINK);
-                        int[] x = {3, 11, 7};
-                        int[] y = {6, 6, 11};
-                        g2.fillPolygon(x, y, 3);
-                        g2.dispose();
-                    }
+                            int arrowWidth = 8;
+                            int arrowHeight = 5;
+
+                            int x = (getWidth() - arrowWidth) / 2;
+                            int y = (getHeight() - arrowHeight) / 2;
+
+                            int[] posX = {x, x + arrowWidth, x + arrowWidth / 2};
+
+                            int[] posY = {y, y, y + arrowHeight};
+
+                            g2.fillPolygon(posX, posY, 3);
+                                g2.dispose();
+                            }
                 };
                 btn.setOpaque(false);
                 btn.setContentAreaFilled(false);
@@ -227,42 +278,90 @@ public class WatchListPanel extends JPanel {
         JTextField genreField    = new JTextField("Action, Comedy");
         JTextField lengthField   = new JTextField("12");
         JTextField seasonsField  = new JTextField("1");
-        JComboBox<String> statusBox = new JComboBox<>(new String[]{"Not Watched", 
-                "Watching", "Completed", "Plan to Watch"});
+        JComboBox<String> statusBox = new JComboBox<>(new String[]{
+                "Not Watched",
+                "Watching",
+                "Completed",
+                "Plan to Watch"
+        });
         JTextField noteField     = new JTextField();
         JTextField priorityField = new JTextField("1");
 
+        Theme.styleTextField(nameField);
+        Theme.styleTextField(genreField);
+        Theme.styleTextField(lengthField);
+        Theme.styleTextField(seasonsField);
+        Theme.styleTextField(noteField);
+        Theme.styleTextField(priorityField);
+        Theme.styleComboBox(statusBox);
+
         Object[] message = {
-            "Anime Title:", nameField,
-            "Genres (comma separated):", genreField,
-            "Total Episode Length:", lengthField,
-            "Seasons Count:", seasonsField,
-            "Initial Status:", statusBox,
-            "Priority Rank (1 = High):", priorityField,
-            "Personal Notes:", noteField
+            Theme.makeBodyLabel("Anime Title:", Theme.TEXT_LIGHT), nameField,
+            Theme.makeBodyLabel("Genres (comma separated):", Theme.TEXT_LIGHT), genreField,
+            Theme.makeBodyLabel("Total Episode Length:", Theme.TEXT_LIGHT), lengthField,
+            Theme.makeBodyLabel("Seasons Count:", Theme.TEXT_LIGHT), seasonsField,
+            Theme.makeBodyLabel("Initial Status:", Theme.TEXT_LIGHT), statusBox,
+            Theme.makeBodyLabel("Priority Rank (1 = High):", Theme.TEXT_LIGHT), priorityField,
+            Theme.makeBodyLabel("Personal Notes:", Theme.TEXT_LIGHT), noteField
         };
 
-        int option = JOptionPane.showConfirmDialog(this, message, "Add New Anime", JOptionPane.OK_CANCEL_OPTION);
+        JOptionPane pane = new JOptionPane(
+                message,
+                JOptionPane.PLAIN_MESSAGE,
+                JOptionPane.OK_CANCEL_OPTION
+        );
+
+        JDialog dialog = pane.createDialog(this, "Add New Anime");
+
+        // Dark dialog background
+        dialog.getContentPane().setBackground(Theme.BG_DARK);
+
+        // Find and style the buttons
+        Theme.styleDialogButtons(dialog);
+
+        // Set background
+        Theme.styleDialogBackground(dialog);
+
+        dialog.setResizable(false);
+        dialog.setVisible(true);
+
+        Object selectedValue = pane.getValue();
+
+        if (!(selectedValue instanceof Integer)) {
+            return;
+        }
+
+        int option = (Integer) selectedValue;
+
         if (option == JOptionPane.OK_OPTION) {
             try {
                 String name = nameField.getText().trim();
-                List<String> genres = Arrays.asList(genreField.getText().split("\\s*,\\s*"));
-                int length   = Integer.parseInt(lengthField.getText().trim());
-                int seasons  = Integer.parseInt(seasonsField.getText().trim());
+                List<String> genres =
+                        Arrays.asList(genreField.getText().split("\\s*,\\s*"));
+                int length = Integer.parseInt(lengthField.getText().trim());
+                int seasons = Integer.parseInt(seasonsField.getText().trim());
                 String status = (String) statusBox.getSelectedItem();
-                String note  = noteField.getText().trim();
+                String note = noteField.getText().trim();
                 int priority = Integer.parseInt(priorityField.getText().trim());
 
-                Anime newAnime = new Anime(name, genres, length, seasons, status, note, priority);
+                Anime newAnime = new Anime(
+                        name, genres, length, seasons, status, note, priority
+                );
+
                 animeList.addAnime(newAnime);
                 refreshList();
+
                 if (refreshCallback != null) {
                     refreshCallback.run();
-                } 
+                }
+
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this,
+                JOptionPane.showMessageDialog(
+                        this,
                         "Invalid numerical inputs. Please check episode lengths or priorities.",
-                            "Input Error", JOptionPane.ERROR_MESSAGE);
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
             }
         }
     }
