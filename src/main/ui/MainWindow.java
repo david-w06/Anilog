@@ -15,18 +15,18 @@ import persistence.JsonWriter;
 // Main background JFrame that holds all panels
 public class MainWindow extends JFrame {
     
-    private static final String JSON_STORE = "./data/animeList.json";
+    private static final String JSON_STORE = Theme.getDataFilePath("./data/animeList.json");
     private AnimeList animeList;
     
-    private JPanel navigationPanel;
+    private NavigationPanel navigationPanel;
     private WatchListPanel watchListPanel;
     private StatisticsPanel statisticsPanel;
     private RecommendationPanel recommendationPanel;
     private AnimeBasePanel animeBasePanel;
     private SettingsPanel settingsPanel;
 
-    CardLayout cardLayout = new CardLayout();
-    JPanel contentContainer = new JPanel(cardLayout);
+    private AnimatedPanelContainer contentContainer;
+    private String currentTab = "WATCHLIST";
 
     private Point initialClick;
 
@@ -35,15 +35,28 @@ public class MainWindow extends JFrame {
         initializeWindow();
     }
 
-    // EFFECTS: initialize main JFrame and adding all panels to it
+    // EFFECTS: initialize main JFrame with screen resolution bounds checking and adding all panels
     @SuppressWarnings("methodlength")
     private void initializeWindow() {
         setUndecorated(true); // no title bar
         setTitle("AniLog");
-        setSize(1200, 750);
+
+        // Scale initial size according to user's display bounds
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice gd = ge.getDefaultScreenDevice();
+        Rectangle screenBounds = gd.getDefaultConfiguration().getBounds();
+
+        int targetWidth = Math.min(1200, (int) (screenBounds.width * 0.85));
+        int targetHeight = Math.min(750, (int) (screenBounds.height * 0.85));
+
+        setSize(targetWidth, targetHeight);
+        setMinimumSize(new Dimension(800, 500));
         setLocationRelativeTo(null);
         setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        if (Theme.APP_ICON != null) {
+            setIconImage(Theme.APP_ICON);
+        }
 
         // Overrides Swing's default behavior EXIT_ON_CLOSE 
         addWindowListener(new WindowAdapter() {
@@ -53,12 +66,8 @@ public class MainWindow extends JFrame {
             }
         });
 
-        //set layout
+        // set layout
         setLayout(new BorderLayout());
-
-        // setup CardLayout container
-        cardLayout = new CardLayout();
-        contentContainer = new JPanel(cardLayout);
 
         // instantiate each distinct panel subclass with central refresh trigger
         watchListPanel = new WatchListPanel(animeList, this::refreshAllPanels);
@@ -66,6 +75,9 @@ public class MainWindow extends JFrame {
         recommendationPanel = new RecommendationPanel(animeList);
         animeBasePanel = new AnimeBasePanel(animeList, this::refreshAllPanels);
         settingsPanel = new SettingsPanel(animeList, this::refreshAllPanels);
+
+        // setup animated container with Watchlist as the initial panel
+        contentContainer = new AnimatedPanelContainer(watchListPanel);
 
         // add panel instances to the container with string keys
         contentContainer.add(watchListPanel, "WATCHLIST");
@@ -76,7 +88,13 @@ public class MainWindow extends JFrame {
 
         // pass a tab-switching callback to the navigation bar, updating tabs on switch
         navigationPanel = new NavigationPanel(tabKey -> {
-            cardLayout.show(contentContainer, tabKey);
+            JPanel nextPanel = getPanel(tabKey);
+            int currentIndex = getTabIndex(currentTab);
+            int nextIndex = getTabIndex(tabKey);
+            boolean fromBottom = nextIndex > currentIndex;
+
+            contentContainer.showPanel(nextPanel, fromBottom);
+            currentTab = tabKey;
             refreshAllPanels();
         });
 
@@ -86,11 +104,43 @@ public class MainWindow extends JFrame {
         // make window draggable via navigation panel
         makeDraggable(navigationPanel);
 
-        //keep at the end
+        // keep at the end
         setVisible(true);
 
-        //intro animation
+        // intro animation
         startSplashAnimation();
+    }
+
+    private int getTabIndex(String tabKey) {
+        switch (tabKey) {
+            case "WATCHLIST":
+                return 0;
+            case "RECOMMENDATIONS":
+                return 1;
+            case "STATISTICS":
+                return 2;
+            case "ANIME_BASE":
+                return 3;
+            case "SETTINGS":
+                return 4;
+            default:
+                return 0;
+        }
+    }
+
+    private JPanel getPanel(String tabKey) {
+        if (tabKey.equals("WATCHLIST")) {
+            return watchListPanel;
+        } else if (tabKey.equals("RECOMMENDATIONS")) {
+            return recommendationPanel;
+        } else if (tabKey.equals("STATISTICS")) {
+            return statisticsPanel;
+        } else if (tabKey.equals("ANIME_BASE")) {
+            return animeBasePanel;
+        } else if (tabKey.equals("SETTINGS")) {
+            return settingsPanel;
+        }
+        return watchListPanel;
     }
 
     // EFFECTS: allows component to be dragged
@@ -135,18 +185,17 @@ public class MainWindow extends JFrame {
 
     // EFFECTS: using a popup window to prompt user to save on exit
     private void handleExitPrompt() {
-        int choice = JOptionPane.showConfirmDialog(
+        int choice = Theme.showStyledConfirm(
                 this,
                 "Would you like to save your watchlist changes before exiting?",
                 "Save on Exit",
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE
+                JOptionPane.YES_NO_CANCEL_OPTION
         );
 
         if (choice == JOptionPane.YES_OPTION) {
             saveWatchList();
             dispose();
-            //print exit log
+            // print exit log
             printLog(EventLog.getInstance());
             System.exit(0);
         } else if (choice == JOptionPane.NO_OPTION) {
@@ -170,7 +219,7 @@ public class MainWindow extends JFrame {
             writer.write(animeList);
             writer.close();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Unable to write to file: " 
+            Theme.showStyledMessage(this, "Unable to write to file: " 
                         + JSON_STORE + "\n" + ex.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -189,10 +238,11 @@ public class MainWindow extends JFrame {
             splashPanel.setVisible(false); 
         });
     }
+
     // EFFECTS: prints all logged events.
     public void printLog(EventLog el) {
-    for (Event next : el) {
-        System.out.println(next.toString());
+        for (Event next : el) {
+            System.out.println(next.toString());
+        }
     }
-}
 }

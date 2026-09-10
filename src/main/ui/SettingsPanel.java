@@ -16,7 +16,7 @@ public class SettingsPanel extends JPanel {
 
     private AnimeList activeAnimeList;
     private Runnable refreshCallback;
-    private static final String JSON_STORE = "./data/animeList.json";
+    private static final String JSON_STORE = Theme.getDataFilePath("./data/animeList.json");
 
     // REQUIRES: animeList != null
     // MODIFIES: this
@@ -170,10 +170,10 @@ public class SettingsPanel extends JPanel {
             writer.write(activeAnimeList);
             writer.close();
 
-            JOptionPane.showMessageDialog(this,
+            Theme.showStyledMessage(this,
                     "Saved watchlist to " + JSON_STORE, "Save Successful", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,
+            Theme.showStyledMessage(this,
                     "Unable to write to file: " + JSON_STORE + "\n" + ex.getMessage(),
                         "Save Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -196,10 +196,10 @@ public class SettingsPanel extends JPanel {
                 refreshCallback.run();
             }
 
-            JOptionPane.showMessageDialog(this,
+            Theme.showStyledMessage(this,
                         "Loaded watchlist from " + JSON_STORE, "Load Successful", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this,
+            Theme.showStyledMessage(this,
                         "Unable to read from file: " + JSON_STORE, "Load Error", JOptionPane.ERROR_MESSAGE);
         }
     }

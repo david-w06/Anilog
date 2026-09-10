@@ -23,17 +23,17 @@ public class AnimeListTest{
         List<String> frierenGenres = new ArrayList<>();
         frierenGenres.add("Fantasy");
         frierenGenres.add("Adventure");
-        frieren = new Anime("Frieren", frierenGenres, 28, 1, "Not Watched", "Masterpiece", 1);
+        frieren = new Anime("Frieren", frierenGenres, 28, 1, "Not Watched", "Masterpiece", 1, 2023);
 
         List<String> narutoGenres = new ArrayList<>();
         narutoGenres.add("Action");
         narutoGenres.add("Adventure");
-        naruto = new Anime("Naruto", narutoGenres, 100, 5, "Watching", "Classic shonen", 2);
+        naruto = new Anime("Naruto", narutoGenres, 100, 5, "Watching", "Classic shonen", 2, 2002);
 
         List<String> toradoraGenres = new ArrayList<>();
         toradoraGenres.add("Romance");
         toradoraGenres.add("Comedy");
-        toradora = new Anime("Toradora", toradoraGenres, 25, 1, "Completed", "Tsundere staple", 3);
+        toradora = new Anime("Toradora", toradoraGenres, 25, 1, "Completed", "Tsundere staple", 3, 2008);
     }
 
     @Test
@@ -265,10 +265,10 @@ public class AnimeListTest{
     @Test
     public void testSortByStatusAllCombinations() {
         List<String> emptyGenres = new ArrayList<>();
-        Anime watching = new Anime("A", emptyGenres, 10, 1, "Watching", "", 1);
-        Anime planToWatch = new Anime("B", emptyGenres, 10, 1, "Plan to Watch", "", 2);
-        Anime completed = new Anime("C", emptyGenres, 10, 1, "Completed", "", 3);
-        Anime notWatched = new Anime("D", emptyGenres, 10, 1, "Not Watched", "", 4);
+        Anime watching = new Anime("A", emptyGenres, 10, 1, "Watching", "", 1, 2024);
+        Anime planToWatch = new Anime("B", emptyGenres, 10, 1, "Plan to Watch", "", 2, 2024);
+        Anime completed = new Anime("C", emptyGenres, 10, 1, "Completed", "", 3, 2024);
+        Anime notWatched = new Anime("D", emptyGenres, 10, 1, "Not Watched", "", 4, 2024);
 
         // Permutation 1
         AnimeList list1 = new AnimeList();
@@ -301,8 +301,8 @@ public class AnimeListTest{
     public void testSortByRatingWithNegativeRatingBranch() {
         List<String> emptyGenres = new ArrayList<>();
         AnimeList list = new AnimeList();
-        Anime unrated = new Anime("Unrated", emptyGenres, 10, 1, "Plan to Watch", "", 1); // rating -1.0
-        Anime invalidNegative = new Anime("Negative", emptyGenres, 10, 1, "Plan to Watch", "", 2);
+        Anime unrated = new Anime("Unrated", emptyGenres, 10, 1, "Plan to Watch", "", 1, 2024); // rating -1.0
+        Anime invalidNegative = new Anime("Negative", emptyGenres, 10, 1, "Plan to Watch", "", 2, 2024);
         invalidNegative.setRating(-2.0); // violates requires clause, but triggers the branch
 
         list.addAnime(unrated);
@@ -317,7 +317,7 @@ public class AnimeListTest{
     @Test
     public void testCalculateFavoriteGenreWithEmptyGenres() {
         AnimeList list = new AnimeList();
-        Anime emptyGenreAnime = new Anime("No Genre", new ArrayList<>(), 10, 1, "Watching", "", 1);
+        Anime emptyGenreAnime = new Anime("No Genre", new ArrayList<>(), 10, 1, "Watching", "", 1, 2024);
         emptyGenreAnime.setCurrentEpisodeWatched(5);
         emptyGenreAnime.setRating(8.0);
         list.addAnime(emptyGenreAnime);
@@ -329,7 +329,7 @@ public class AnimeListTest{
         List<String> genres = new ArrayList<>();
         genres.add("Adventure");
         AnimeList list = new AnimeList();
-        Anime anime1 = new Anime("Anime 1", genres, 10, 1, "Watching", "", 1);
+        Anime anime1 = new Anime("Anime 1", genres, 10, 1, "Watching", "", 1, 2024);
         anime1.setCurrentEpisodeWatched(5);
         // rating is -1.0
         list.addAnime(anime1);
@@ -342,11 +342,11 @@ public class AnimeListTest{
         List<String> genres = new ArrayList<>();
         genres.add("Adventure");
         
-        Anime a1 = new Anime("A1", genres, 10, 1, "Plan to Watch", "", 5);
-        Anime a2 = new Anime("A2", genres, 10, 1, "Plan to Watch", "", 1);
-        Anime a3 = new Anime("A3", genres, 10, 1, "Plan to Watch", "", 4);
-        Anime a4 = new Anime("A4", genres, 10, 1, "Plan to Watch", "", 2);
-        Anime a5 = new Anime("A5", genres, 10, 1, "Plan to Watch", "", 3);
+        Anime a1 = new Anime("A1", genres, 10, 1, "Plan to Watch", "", 5, 2024);
+        Anime a2 = new Anime("A2", genres, 10, 1, "Plan to Watch", "", 1, 2024);
+        Anime a3 = new Anime("A3", genres, 10, 1, "Plan to Watch", "", 4, 2024);
+        Anime a4 = new Anime("A4", genres, 10, 1, "Plan to Watch", "", 2, 2024);
+        Anime a5 = new Anime("A5", genres, 10, 1, "Plan to Watch", "", 3, 2024);
         
         list.addAnime(a1);
         list.addAnime(a2);

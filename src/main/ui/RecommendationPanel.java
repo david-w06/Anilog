@@ -3,6 +3,8 @@ package ui;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import model.Anime;
 import model.AnimeList;
@@ -50,7 +52,7 @@ public class RecommendationPanel extends JPanel {
         ));
 
         JLabel titleLabel = Theme.makeTitleLabel("Recommendations");
-        JButton refreshBtn = Theme.makeRoundedButton(">> Generate");
+        JButton refreshBtn = Theme.makeRoundedButton(">> Refresh Recs");
         refreshBtn.addActionListener(e -> generateRecommendations());
 
         header.add(titleLabel, BorderLayout.WEST);
@@ -72,32 +74,71 @@ public class RecommendationPanel extends JPanel {
 
     // MODIFIES: this, recommendationsContainer
     // EFFECTS: clears current content and populates recommendationsContainer with top anime matches based on
-    //          favorite genre, or displays an empty state message if no recommendations exist.
+    //          favorite genre and priority ranking.
     public void generateRecommendations() {
         recommendationsContainer.removeAll();
         String favGenre = animeList.calculateFavoriteGenre();
 
-        if (favGenre == null) {
-            addEmptyState("Add watched anime with ratings to unlock recommendations!");
+        List<Anime> topRecs = animeList.getTopRecommendations(favGenre);
+
+        if (favGenre != null) {
+            addGenreBadge(favGenre);
         } else {
-            List<Anime> topRecs = animeList.getTopRecommendations(favGenre);
-            if (topRecs.isEmpty()) {
-                addEmptyState("No 'Plan to Watch' anime found matching your top genre: " + favGenre);
-            } else {
-                addGenreBadge(favGenre);
-                addRecommendationList(topRecs, favGenre);
-            }
+            addEmptyState("Add and rate anime in your Watchlist to refine personalized recommendations!");
+            recommendationsContainer.add(Box.createVerticalStrut(14));
         }
+
+        if (!topRecs.isEmpty()) {
+            addRecommendationList(topRecs, favGenre);
+        } else {
+            addEmptyState("No unwatched anime in your current watchlist. Explore recommendations below!");
+            recommendationsContainer.add(Box.createVerticalStrut(14));
+        }
+
+        addDiscoverySection();
 
         revalidate();
         repaint();
+    }
+
+    private void addDiscoverySection() {
+        JLabel discoveryTitle = Theme.makeBodyLabel("Explore Popular Catalog Items", Color.WHITE);
+        discoveryTitle.setFont(Theme.FONT_BODY.deriveFont(Font.BOLD, 14f));
+        recommendationsContainer.add(discoveryTitle);
+        recommendationsContainer.add(Box.createVerticalStrut(10));
+
+        List<Anime> catalog = getCatalogItems();
+        for (Anime item : catalog) {
+            if (!isInWatchList(item.getName())) {
+                recommendationsContainer.add(makeCatalogCard(item));
+                recommendationsContainer.add(Box.createVerticalStrut(10));
+            }
+        }
+    }
+
+    private boolean isInWatchList(String name) {
+        for (Anime a : animeList.getAnimes()) {
+            if (a.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<Anime> getCatalogItems() {
+        List<Anime> catalog = new ArrayList<>();
+        catalog.add(new Anime("Fullmetal Alchemist: Brotherhood", Arrays.asList("Action", "Adventure", "Fantasy"), 64, 1, "Plan to Watch", "Catalog", 1, 2009));
+        catalog.add(new Anime("Attack on Titan", Arrays.asList("Action", "Drama", "Fantasy"), 87, 4, "Plan to Watch", "Catalog", 2, 2013));
+        catalog.add(new Anime("Demon Slayer", Arrays.asList("Action", "Supernatural"), 55, 3, "Plan to Watch", "Catalog", 2, 2019));
+        catalog.add(new Anime("Steins Gate", Arrays.asList("Sci-Fi", "Thriller"), 24, 1, "Plan to Watch", "Catalog", 2, 2011));
+        return catalog;
     }
 
     // REQUIRES: favGenre != null
     // MODIFIES: recommendationsContainer
     // EFFECTS: adds genre indicator badge row to recommendationsContainer.
     private void addGenreBadge(String favGenre) {
-        JLabel genreHint = Theme.makeBodyLabel("Based on your top genre: ", Theme.TEXT_DIM);
+        JLabel genreHint = Theme.makeBodyLabel("Top Genre Preference: ", Theme.TEXT_DIM);
         JLabel genreBadge = new JLabel(" " + favGenre + " ");
         genreBadge.setFont(Theme.FONT_SMALL.deriveFont(10f));
         genreBadge.setForeground(Theme.ACCENT_PINK);
@@ -115,7 +156,7 @@ public class RecommendationPanel extends JPanel {
         recommendationsContainer.add(Box.createVerticalStrut(14));
     }
 
-    // REQUIRES: topRecs != null, favGenre != null
+    // REQUIRES: topRecs != null
     // MODIFIES: recommendationsContainer
     // EFFECTS: generates and appends recommendation card panels to recommendationsContainer for each anime in topRecs.
     private void addRecommendationList(List<Anime> topRecs, String favGenre) {
@@ -125,17 +166,67 @@ public class RecommendationPanel extends JPanel {
         }
     }
 
-    // REQUIRES: anime != null, matchedGenre != null
-    // EFFECTS: constructs and returns a rounded panel containing anime priority badge and detail information.
+    // REQUIRES: anime != null
+    // EFFECTS: constructs and returns a rounded panel containing anime priority badge, detail info, and quick actions
     private JPanel makeRecCard(Anime anime, String matchedGenre) {
         JPanel card = Theme.makeRoundedPanel(Theme.PANEL_BG, 14);
         card.setLayout(new BorderLayout(12, 8));
-        card.setBorder(BorderFactory.createEmptyBorder(16, 20, 16, 20));
+        card.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
 
         card.add(makePriorityBadge(anime.getPriority()), BorderLayout.WEST);
         card.add(makeDetailPanel(anime, matchedGenre), BorderLayout.CENTER);
 
+        JButton startWatchBtn = Theme.makeRoundedButton("Start Watching");
+        startWatchBtn.setFont(Theme.FONT_SMALL.deriveFont(11f));
+        startWatchBtn.addActionListener(e -> {
+            anime.setStatus("Watching");
+            if (anime.getCurrentEpisodeWatched() == 0) {
+                anime.setCurrentEpisodeWatched(1);
+            }
+            generateRecommendations();
+        });
+
+        JPanel rightCol = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 10));
+        rightCol.setOpaque(false);
+        rightCol.add(startWatchBtn);
+        card.add(rightCol, BorderLayout.EAST);
+
+        return card;
+    }
+
+    private JPanel makeCatalogCard(Anime anime) {
+        JPanel card = Theme.makeRoundedPanel(Theme.PANEL_BG, 14);
+        card.setLayout(new BorderLayout(12, 8));
+        card.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 85));
+
+        JPanel detailCol = new JPanel(new GridLayout(2, 1, 0, 3));
+        detailCol.setOpaque(false);
+
+        JLabel nameLabel = new JLabel(anime.getName());
+        nameLabel.setFont(Theme.FONT_BODY.deriveFont(Font.BOLD, 13f));
+        nameLabel.setForeground(Color.WHITE);
+
+        JLabel genreLabel = Theme.makeBodyLabel("Genres: " + String.join(", ", anime.getGenre()) + "  •  " + anime.getLength() + " eps", Theme.TEXT_DIM);
+        genreLabel.setFont(Theme.FONT_SMALL);
+
+        detailCol.add(nameLabel);
+        detailCol.add(genreLabel);
+
+        JButton addBtn = Theme.makeRoundedButton("+ Add to Watchlist");
+        addBtn.setFont(Theme.FONT_SMALL.deriveFont(11f));
+        addBtn.addActionListener(e -> {
+            animeList.addAnime(new Anime(anime.getName(), anime.getGenre(), anime.getSeasonEpisodeCounts(), "Plan to Watch", anime.getNote(), anime.getPriority(), anime.getYear()));
+            generateRecommendations();
+        });
+
+        JPanel rightCol = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 8));
+        rightCol.setOpaque(false);
+        rightCol.add(addBtn);
+
+        card.add(detailCol, BorderLayout.CENTER);
+        card.add(rightCol, BorderLayout.EAST);
         return card;
     }
 
@@ -148,13 +239,13 @@ public class RecommendationPanel extends JPanel {
         priorityBadge.setBackground(Theme.ACCENT_PINK);
         priorityBadge.setBorder(BorderFactory.createEmptyBorder(3, 8, 3, 8));
 
-        JPanel leftCol = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel leftCol = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 12));
         leftCol.setOpaque(false);
         leftCol.add(priorityBadge);
         return leftCol;
     }
 
-    // REQUIRES: anime != null, matchedGenre != null
+    // REQUIRES: anime != null
     // EFFECTS: constructs and returns center column panel containing anime title, matched genre, season, and episode
     private JPanel makeDetailPanel(Anime anime, String matchedGenre) {
         JPanel centerCol = new JPanel(new GridLayout(2, 1, 0, 4));
@@ -164,9 +255,10 @@ public class RecommendationPanel extends JPanel {
         nameLabel.setFont(Theme.FONT_BODY.deriveFont(Font.BOLD, 13f));
         nameLabel.setForeground(Color.WHITE);
 
+        String matchedStr = (matchedGenre != null && anime.getGenre().contains(matchedGenre)) ? "Matched: " + matchedGenre + "  •  " : "";
         JLabel detailLabel = Theme.makeBodyLabel(
-                "Matched: " + matchedGenre + "  •  " + anime.getSeasons() + " seasons  •  " 
-                + anime.getLength() + " eps", Theme.TEXT_DIM);
+                matchedStr + anime.getSeasons() + " seasons  •  " 
+                + anime.getLength() + " eps  •  Status: " + anime.getStatus(), Theme.TEXT_DIM);
         detailLabel.setFont(Theme.FONT_SMALL);
 
         centerCol.add(nameLabel);

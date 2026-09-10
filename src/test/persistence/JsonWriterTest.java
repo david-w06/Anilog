@@ -29,12 +29,12 @@ public class JsonWriterTest {
         List<String> frierenGenres = new ArrayList<>();
         frierenGenres.add("Fantasy");
         frierenGenres.add("Adventure");
-        frieren = new Anime("Frieren", frierenGenres,28, 1, "Not Watched", "Masterpiece", 1);
+        frieren = new Anime("Frieren", frierenGenres, 28, 1, "Not Watched", "Masterpiece", 1, 2023);
 
         List<String> narutoGenres = new ArrayList<>();
         narutoGenres.add("Action");
         narutoGenres.add("Adventure");
-        naruto = new Anime("Naruto", narutoGenres,100, 5, "Watching", "Classic shonen", 2);
+        naruto = new Anime("Naruto", narutoGenres, 100, 5, "Watching", "Classic shonen", 2, 2002);
 
         writer = new JsonWriter("./data/testWriter.json");
         reader = new JsonReader("./data/testWriter.json");
@@ -84,7 +84,7 @@ public class JsonWriterTest {
     @Test
     public void testWriterAnimeListWithEmptyGenres() throws IOException {
         AnimeList list = new AnimeList();
-        Anime emptyGenreAnime = new Anime("No Genre", new ArrayList<>(), 10, 1, "Watching", "", 1);
+        Anime emptyGenreAnime = new Anime("No Genre", new ArrayList<>(), 10, 1, "Watching", "", 1, 2024);
         list.addAnime(emptyGenreAnime);
 
         writer.open();

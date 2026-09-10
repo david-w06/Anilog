@@ -1,0 +1,12 @@
+﻿C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\AnimatedPanelContainer.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\AnimeBasePanel.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\AnimeConsoleUI.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\Main.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\MainWindow.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\NavigationPanel.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\RecommendationPanel.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\SettingsPanel.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\SplashOverlayPanel.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\StatisticsPanel.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\Theme.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\main\ui\WatchListPanel.java

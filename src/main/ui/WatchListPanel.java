@@ -272,12 +272,13 @@ public class WatchListPanel extends JPanel {
 
     // MODIFIES: animeList, listModel
     // EFFECTS: displays a dialog for adding an anime
+    // EFFECTS: displays a dialog for adding a new anime and runs refreshCallback if non-null
     @SuppressWarnings("methodlength")
     private void openAddAnimeDialog() {
-        JTextField nameField     = new JTextField();
-        JTextField genreField    = new JTextField("Action, Comedy");
-        JTextField lengthField   = new JTextField("12");
-        JTextField seasonsField  = new JTextField("1");
+        JTextField nameField    = new JTextField();
+        JTextField genreField   = new JTextField();
+        JTextField seasonsField = new JTextField("1");
+        JTextField seasonEpsField = new JTextField("12");
         JComboBox<String> statusBox = new JComboBox<>(new String[]{
                 "Not Watched",
                 "Watching",
@@ -286,23 +287,26 @@ public class WatchListPanel extends JPanel {
         });
         JTextField noteField     = new JTextField();
         JTextField priorityField = new JTextField("1");
+        JTextField yearField     = new JTextField("2024");
 
         Theme.styleTextField(nameField);
         Theme.styleTextField(genreField);
-        Theme.styleTextField(lengthField);
         Theme.styleTextField(seasonsField);
+        Theme.styleTextField(seasonEpsField);
         Theme.styleTextField(noteField);
         Theme.styleTextField(priorityField);
+        Theme.styleTextField(yearField);
         Theme.styleComboBox(statusBox);
 
         Object[] message = {
             Theme.makeBodyLabel("Anime Title:", Theme.TEXT_LIGHT), nameField,
             Theme.makeBodyLabel("Genres (comma separated):", Theme.TEXT_LIGHT), genreField,
-            Theme.makeBodyLabel("Total Episode Length:", Theme.TEXT_LIGHT), lengthField,
             Theme.makeBodyLabel("Seasons Count:", Theme.TEXT_LIGHT), seasonsField,
+            Theme.makeBodyLabel("Episodes per Season (comma-separated, e.g. 12, 24 or single total/default count):", Theme.TEXT_LIGHT), seasonEpsField,
             Theme.makeBodyLabel("Initial Status:", Theme.TEXT_LIGHT), statusBox,
             Theme.makeBodyLabel("Priority Rank (1 = High):", Theme.TEXT_LIGHT), priorityField,
-            Theme.makeBodyLabel("Personal Notes:", Theme.TEXT_LIGHT), noteField
+            Theme.makeBodyLabel("Personal Notes:", Theme.TEXT_LIGHT), noteField,
+            Theme.makeBodyLabel("Year Released:", Theme.TEXT_LIGHT), yearField
         };
 
         JOptionPane pane = new JOptionPane(
@@ -338,15 +342,35 @@ public class WatchListPanel extends JPanel {
                 String name = nameField.getText().trim();
                 List<String> genres =
                         Arrays.asList(genreField.getText().split("\\s*,\\s*"));
-                int length = Integer.parseInt(lengthField.getText().trim());
                 int seasons = Integer.parseInt(seasonsField.getText().trim());
+                if (seasons <= 0) {
+                    seasons = 1;
+                }
+                String epInput = seasonEpsField.getText().trim();
+                List<Integer> counts = new ArrayList<>();
+                if (epInput.contains(",")) {
+                    for (String part : epInput.split("\\s*,\\s*")) {
+                        if (!part.isEmpty()) {
+                            counts.add(Integer.parseInt(part));
+                        }
+                    }
+                } else if (!epInput.isEmpty()) {
+                    int val = Integer.parseInt(epInput);
+                    for (int i = 0; i < seasons; i++) {
+                        counts.add(val);
+                    }
+                }
                 String status = (String) statusBox.getSelectedItem();
                 String note = noteField.getText().trim();
                 int priority = Integer.parseInt(priorityField.getText().trim());
+                int year = Integer.parseInt(yearField.getText().trim());
 
-                Anime newAnime = new Anime(
-                        name, genres, length, seasons, status, note, priority
-                );
+                Anime newAnime;
+                if (!counts.isEmpty()) {
+                    newAnime = new Anime(name, genres, counts, status, note, priority, year);
+                } else {
+                    newAnime = new Anime(name, genres, 12, seasons, status, note, priority, year);
+                }
 
                 animeList.addAnime(newAnime);
                 refreshList();
@@ -356,9 +380,9 @@ public class WatchListPanel extends JPanel {
                 }
 
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(
+                Theme.showStyledMessage(
                         this,
-                        "Invalid numerical inputs. Please check episode lengths or priorities.",
+                        "Invalid numerical inputs. Please check season/episode counts or priorities.",
                         "Input Error",
                         JOptionPane.ERROR_MESSAGE
                 );
@@ -372,12 +396,23 @@ public class WatchListPanel extends JPanel {
     private void openModifyAnimeDialog() {
         Anime selected = animeJList.getSelectedValue();
         if (selected == null) {
-            JOptionPane.showMessageDialog(this, "Please select an anime entry to modify.",
+            Theme.showStyledMessage(this, "Please select an anime entry to modify.",
                         "No Selection", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         JTextField epWatchedField = new JTextField(String.valueOf(selected.getCurrentEpisodeWatched()));
+        
+        StringBuilder countsSb = new StringBuilder();
+        List<Integer> currentCounts = selected.getSeasonEpisodeCounts();
+        for (int i = 0; i < currentCounts.size(); i++) {
+            if (i > 0) {
+                countsSb.append(", ");
+            }
+            countsSb.append(currentCounts.get(i));
+        }
+        JTextField seasonEpsField = new JTextField(countsSb.toString());
+
         JComboBox<String> statusBox = new JComboBox<>(new String[]{"Not Watched", "Watching", 
                 "Completed", "Plan to Watch"});
         statusBox.setSelectedItem(selected.getStatus());
@@ -387,17 +422,31 @@ public class WatchListPanel extends JPanel {
         JTextField priorityField = new JTextField(String.valueOf(selected.getPriority()));
 
         Object[] message = {
-            "Update Watched Episodes (0 to " + selected.getLength() + "):", epWatchedField,
-            "Update Watch Status:", statusBox,
-            "Update Rating (0.0 to 10.0, leave empty for unrated):", ratingField,
-            "Priority Rank:", priorityField,
-            "Personal Notes:", noteField
+            Theme.makeBodyLabel("Update Watched Episodes (0 to " + selected.getLength() + "):", Theme.TEXT_LIGHT), epWatchedField,
+            Theme.makeBodyLabel("Season Episode Breakdown (comma separated per season):", Theme.TEXT_LIGHT), seasonEpsField,
+            Theme.makeBodyLabel("Update Watch Status:", Theme.TEXT_LIGHT), statusBox,
+            Theme.makeBodyLabel("Update Rating (0.0 to 10.0, leave empty for unrated):", Theme.TEXT_LIGHT), ratingField,
+            Theme.makeBodyLabel("Priority Rank:", Theme.TEXT_LIGHT), priorityField,
+            Theme.makeBodyLabel("Personal Notes:", Theme.TEXT_LIGHT), noteField
         };
 
-        int option = JOptionPane.showConfirmDialog(this, message, "Modify: " 
+        int option = Theme.showStyledConfirm(this, message, "Modify: " 
                 + selected.getName(), JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             try {
+                String epBreakdownStr = seasonEpsField.getText().trim();
+                if (!epBreakdownStr.isEmpty()) {
+                    List<Integer> newCounts = new ArrayList<>();
+                    for (String part : epBreakdownStr.split("\\s*,\\s*")) {
+                        if (!part.isEmpty()) {
+                            newCounts.add(Integer.parseInt(part));
+                        }
+                    }
+                    if (!newCounts.isEmpty()) {
+                        selected.setSeasonEpisodeCounts(newCounts);
+                    }
+                }
+
                 int newEp = Integer.parseInt(epWatchedField.getText().trim());
                 if (newEp < 0 || newEp > selected.getLength()) {
                     throw new IllegalArgumentException("Episodes must be between 0 and total length.");
@@ -429,7 +478,7 @@ public class WatchListPanel extends JPanel {
                     refreshCallback.run();
                 } 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Invalid input: " 
+                Theme.showStyledMessage(this, "Invalid input: " 
                         + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -440,7 +489,7 @@ public class WatchListPanel extends JPanel {
     private void deleteSelectedAnime() {
         Anime selected = animeJList.getSelectedValue();
         if (selected != null) {
-            int confirm = JOptionPane.showConfirmDialog(this,
+            int confirm = Theme.showStyledConfirm(this,
                     "Are you sure you want to delete '" + selected.getName() + "'?",
                     "Confirm Delete", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
@@ -523,8 +572,11 @@ public class WatchListPanel extends JPanel {
         public Component getListCellRendererComponent(JList<? extends Anime> list, Anime anime,
                 int index, boolean isSelected, boolean cellHasFocus) {
 
+            List<Integer> counts = anime.getSeasonEpisodeCounts();
+            String breakdownStr = counts.toString();
+
             nameLabel.setText(anime.getName() + "  [" + anime.getSeasons() 
-                    + " season" + (anime.getSeasons() > 1 ? "s" : "") + "]");
+                    + " season" + (anime.getSeasons() > 1 ? "s" : "") + " " + breakdownStr + "]");
 
             String ratingStr = (anime.getRating() == -1.0) ? "Unrated" : anime.getRating() + "/10";
             String genreStr  = String.join(", ", anime.getGenre());

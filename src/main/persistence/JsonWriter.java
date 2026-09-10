@@ -30,9 +30,14 @@ public class JsonWriter {
     }
 
     // MODIFIES: this
-    // EFFECTS: opens the writer
+    // EFFECTS: opens the writer, creating parent directories if needed
     public void open() throws FileNotFoundException {
-        writer = new PrintWriter(destination);
+        java.io.File file = new java.io.File(destination);
+        java.io.File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
+        }
+        writer = new PrintWriter(file);
     }
 
     // EFFECTS: closes writer

@@ -1,11 +1,1 @@
-{"animes": [{
-    "note": "",
-    "seasons": 1,
-    "genres": ["Action"],
-    "name": "Naruto",
-    "length": 12,
-    "rating": 10,
-    "currentEpisodeWatched": 12,
-    "priority": 1,
-    "status": "Completed"
-}]}
+{"animes": []}

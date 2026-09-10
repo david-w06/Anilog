@@ -84,6 +84,20 @@ public class AnimeList {
         return filteredList;
     }
 
+    // REQUIRES: targetYear > 0
+    // EFFECTS: returns a list containing only the anime released in the target year
+    public List<Anime> filterByReleaseYear(int targetYear) {
+       List<Anime> filteredList = new ArrayList<>();
+       
+        for (Anime anime : animes) {
+            if (anime.getYear() == targetYear) {
+                filteredList.add(anime);
+            }
+        } 
+        return filteredList;
+    }
+
+
     // ================= Sorting Operations =================
     
     // EFFECTS: returns a new list of anime sorted alphabetically by name
@@ -199,8 +213,10 @@ public class AnimeList {
     public List<Anime> getTopRecommendations(String favoriteGenre) {
         List<Anime> recommendations = new ArrayList<>();
         for (Anime anime : animes) {
-            if (anime.getGenre().contains(favoriteGenre)) {
-                recommendations.add(anime);
+            if ("Plan to Watch".equals(anime.getStatus())) {
+                if (favoriteGenre == null || anime.getGenre().contains(favoriteGenre)) {
+                    recommendations.add(anime);
+                }
             }
         }
 

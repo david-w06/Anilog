@@ -19,7 +19,7 @@ public class AnimeTest {
         defaultGenres.add("Adventure");
         defaultGenres.add("Fantasy");
         
-        testAnime = new Anime("Frieren", defaultGenres, 28, 1, "Watched", "Masterpiece", 1);
+        testAnime = new Anime("Frieren", defaultGenres, 28, 1, "Watched", "Masterpiece", 1, 2023);
     }
 
     @Test
@@ -28,11 +28,29 @@ public class AnimeTest {
         assertEquals(defaultGenres, testAnime.getGenre());
         assertEquals(28, testAnime.getLength());
         assertEquals(1, testAnime.getSeasons());
+        assertEquals(List.of(28), testAnime.getSeasonEpisodeCounts());
         assertEquals("Watched", testAnime.getStatus());
         assertEquals("Masterpiece", testAnime.getNote());
         assertEquals(1, testAnime.getPriority());
         assertEquals(0, testAnime.getCurrentEpisodeWatched());
         assertEquals(-1.0, testAnime.getRating(), 0.001);
+        assertEquals(2023, testAnime.getYear());
+    }
+
+    @Test
+    public void testSeasonEpisodeCountsConstructor() {
+        Anime multiSeason = new Anime("Naruto", defaultGenres, List.of(220, 500), "Watching", "Classic", 2, 2002);
+        assertEquals(720, multiSeason.getLength());
+        assertEquals(2, multiSeason.getSeasons());
+        assertEquals(List.of(220, 500), multiSeason.getSeasonEpisodeCounts());
+    }
+
+    @Test
+    public void testSetSeasonEpisodeCounts() {
+        testAnime.setSeasonEpisodeCounts(List.of(12, 16));
+        assertEquals(28, testAnime.getLength());
+        assertEquals(2, testAnime.getSeasons());
+        assertEquals(List.of(12, 16), testAnime.getSeasonEpisodeCounts());
     }
 
     @Test

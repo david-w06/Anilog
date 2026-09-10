@@ -1,3 +1,4 @@
+/* 
 package ui;
 
 import model.Anime;
@@ -127,7 +128,10 @@ public class AnimeConsoleUI {
         System.out.print("Enter watch priority (1 is highest): ");
         int priority = Integer.parseInt(input.nextLine());
 
-        Anime newAnime = new Anime(name, genres, length, seasons, status, note, priority);
+        System.out.print("Enter year released: ");
+        int year = Integer.parseInt(input.nextLine());
+
+        Anime newAnime = new Anime(name, genres, length, seasons, status, note, priority, year);
         animeList.addAnime(newAnime);
         System.out.println("Successfully added " + name);
     }
@@ -386,3 +390,4 @@ public class AnimeConsoleUI {
         }
     }
 }
+    */

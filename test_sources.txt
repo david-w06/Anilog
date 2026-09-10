@@ -1,0 +1,4 @@
+﻿C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\test\model\AnimeListTest.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\test\model\AnimeTest.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\test\persistence\JsonReaderTest.java
+C:\Users\ltt06\Desktop\CPSC 210\project\ProjectStarter\src\test\persistence\JsonWriterTest.java

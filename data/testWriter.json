@@ -2,6 +2,8 @@
     {
         "note": "Masterpiece",
         "seasons": 1,
+        "seasonEpisodeCounts": [28],
+        "year": 2023,
         "genres": [
             "Fantasy",
             "Adventure"
@@ -16,6 +18,14 @@
     {
         "note": "Classic shonen",
         "seasons": 5,
+        "seasonEpisodeCounts": [
+            20,
+            20,
+            20,
+            20,
+            20
+        ],
+        "year": 2002,
         "genres": [
             "Action",
             "Adventure"

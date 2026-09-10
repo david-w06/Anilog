@@ -31,17 +31,17 @@ public class AnimeBasePanel extends JPanel {
     // EFFECTS: populates stockLibrary with default stock anime items
     private void populateStockDatabase() {
         stockLibrary.add(new Anime("Fullmetal Alchemist: Brotherhood",
-                Arrays.asList("Action", "Adventure", "Fantasy"), 64, 1, "Not Watched", "Stock catalog item", 1));
+                Arrays.asList("Action", "Adventure", "Fantasy"), 64, 1, "Not Watched", "Stock catalog item", 1, 2009));
         stockLibrary.add(new Anime("Attack on Titan",
-                Arrays.asList("Action", "Drama", "Mystery"), 87, 4, "Not Watched", "Stock catalog item", 2));
+                Arrays.asList("Action", "Drama", "Mystery"), 87, 4, "Not Watched", "Stock catalog item", 2, 2013));
         stockLibrary.add(new Anime("Demon Slayer",
-                Arrays.asList("Action", "Supernatural"), 55, 3, "Not Watched", "Stock catalog item", 2));
+                Arrays.asList("Action", "Supernatural"), 55, 3, "Not Watched", "Stock catalog item", 2, 2019));
         stockLibrary.add(new Anime("Spirited Away",
-                Arrays.asList("Animation", "Adventure", "Supernatural"), 1, 1, "Not Watched", "Movie", 3));
+                Arrays.asList("Animation", "Adventure", "Supernatural"), 1, 1, "Not Watched", "Movie", 3, 2001));
         stockLibrary.add(new Anime("Jujutsu Kaisen",
-                Arrays.asList("Action", "Fantasy"), 47, 2, "Not Watched", "Stock catalog item", 1));
+                Arrays.asList("Action", "Fantasy"), 47, 2, "Not Watched", "Stock catalog item", 1, 2020));
         stockLibrary.add(new Anime("Steins Gate",
-                Arrays.asList("Sci-Fi", "Thriller"), 24, 1, "Not Watched", "Stock catalog item", 2));
+                Arrays.asList("Sci-Fi", "Thriller"), 24, 1, "Not Watched", "Stock catalog item", 2, 2011));
     }
 
     // MODIFIES: this
@@ -152,12 +152,12 @@ public class AnimeBasePanel extends JPanel {
         addBtn.addActionListener(e -> {
             Anime copy = new Anime(anime.getName(), new ArrayList<>(anime.getGenre()),
                     anime.getLength(), anime.getSeasons(),
-                    "Plan to Watch", "Added from Stock Base", anime.getPriority());
+                    "Plan to Watch", "Added from Stock Base", anime.getPriority(), anime.getYear());
             activeWatchList.addAnime(copy);
             if (refreshCallback != null) {
                 refreshCallback.run();
             } 
-            JOptionPane.showMessageDialog(this,
+            Theme.showStyledMessage(this,
                         "'" + anime.getName() + "' added to your WatchList!", "Success",
                         JOptionPane.INFORMATION_MESSAGE);
         });
