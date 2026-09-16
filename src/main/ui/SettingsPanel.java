@@ -3,21 +3,14 @@ package ui;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 
-import model.Anime;
 import model.AnimeList;
-import persistence.JsonReader;
-import persistence.JsonWriter;
 
 // JPanel that represents the tab for settings
 public class SettingsPanel extends JPanel {
 
     private AnimeList activeAnimeList;
     private Runnable refreshCallback;
-    private static final String JSON_STORE = Theme.getDataFilePath("./data/animeList.json");
-
     // REQUIRES: animeList != null
     // MODIFIES: this
     // EFFECTS: constructs panel object with the given anime list and refresh callback
@@ -90,14 +83,14 @@ public class SettingsPanel extends JPanel {
 
         actionRow.add(makeActionCard(
                 "[Save]  Save Watchlist",
-                    "Writes current data to disk",
-                    Theme.makeRoundedButton("Save to File"),
+                    "Changes are saved automatically",
+                    Theme.makeRoundedButton("Confirm Saved"),
                     e -> saveWatchList()
         ));
         actionRow.add(makeActionCard(
                 "[Load]  Load Watchlist",
-                "Replaces current data from disk",
-                Theme.makeRoundedButton("Load from File"),
+                "Reloads current data from the database",
+                Theme.makeRoundedButton("Reload Database"),
                 e -> loadWatchList()
         ));
 
@@ -112,11 +105,11 @@ public class SettingsPanel extends JPanel {
         infoCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
         infoCard.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel aboutTitle = Theme.makeBodyLabel("AniLog — Anime Watchlist Tracker", Theme.TEXT_LIGHT);
+        JLabel aboutTitle = Theme.makeBodyLabel("Creator's Github", Theme.TEXT_LIGHT);
         aboutTitle.setFont(Theme.FONT_BODY.deriveFont(Font.BOLD, 12f));
         aboutTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel aboutSub = Theme.makeBodyLabel("Manage, rate, and discover your anime collection.", Theme.TEXT_DIM);
+        JLabel aboutSub = Theme.makeBodyLabel("github.com/david-w06/Anilog", Theme.TEXT_DIM);
         aboutSub.setFont(Theme.FONT_SMALL.deriveFont(10f));
         aboutSub.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -155,52 +148,28 @@ public class SettingsPanel extends JPanel {
         return card;
     }
 
-    // MODIFIES: disk file at JSON_STORE
-    // EFFECTS: saves activeAnimeList data to JSON_STORE on disk and shows a confirmation message
+    // EFFECTS: confirms that the current watchlist is already persisted in the database
     private void saveWatchList() {
-        try {
-            File file = new File(JSON_STORE);
-            File parentDir = file.getParentFile();
-            if (parentDir != null && !parentDir.exists()) {
-                parentDir.mkdirs();
-            } 
-
-            JsonWriter writer = new JsonWriter(JSON_STORE);
-            writer.open();
-            writer.write(activeAnimeList);
-            writer.close();
-
-            Theme.showStyledMessage(this,
-                    "Saved watchlist to " + JSON_STORE, "Save Successful", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception ex) {
-            Theme.showStyledMessage(this,
-                    "Unable to write to file: " + JSON_STORE + "\n" + ex.getMessage(),
-                        "Save Error", JOptionPane.ERROR_MESSAGE);
-        }
+        Theme.showStyledMessage(this,
+                "Your watchlist changes are saved automatically.",
+                "Save Successful", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // MODIFIES: this.activeAnimeList, disk file
-    // EFFECTS: reads anime list from JSON_STORE, updates activeAnimeList with loaded items, runs refreshCallback
-    //          if non-null, and shows a success dialog; displays error dialog if reading fails
+    // MODIFIES: this.activeAnimeList
+    // EFFECTS: reloads activeAnimeList from the database and refreshes the UI
     private void loadWatchList() {
         try {
-            JsonReader reader = new JsonReader(JSON_STORE);
-            AnimeList loadedList = reader.read();
-
-            activeAnimeList.getAnimes().clear();
-            for (Anime anime : loadedList.getAnimes()) {
-                activeAnimeList.addAnime(anime);
-            }
-
+            activeAnimeList.reloadFromRepository();
             if (refreshCallback != null) {
                 refreshCallback.run();
             }
-
             Theme.showStyledMessage(this,
-                        "Loaded watchlist from " + JSON_STORE, "Load Successful", JOptionPane.INFORMATION_MESSAGE);
-        } catch (IOException ex) {
+                    "Loaded watchlist from the database.",
+                    "Load Successful", JOptionPane.INFORMATION_MESSAGE);
+        } catch (RuntimeException ex) {
             Theme.showStyledMessage(this,
-                        "Unable to read from file: " + JSON_STORE, "Load Error", JOptionPane.ERROR_MESSAGE);
+                    "Unable to load watchlist from the database:\n" + ex.getMessage(),
+                    "Load Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

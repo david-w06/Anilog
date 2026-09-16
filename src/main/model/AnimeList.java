@@ -8,12 +8,23 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import persistence.AnimeRepository;
+
 public class AnimeList {
     private List<Anime> animes;
+    private AnimeRepository repository;
+    private boolean repositoryBacked;
 
     // EFFECTS: constructs an empty anime list
     public AnimeList() {
-        this.animes = new ArrayList<>();
+        this(false);
+    }
+
+    // EFFECTS: constructs an anime list, optionally loading it from the database
+    public AnimeList(boolean repositoryBacked) {
+        this.repository = new AnimeRepository();
+        this.repositoryBacked = repositoryBacked;
+        this.animes = repositoryBacked ? repository.getAllAnime() : new ArrayList<>();
     }
 
     // ================= Core Operations =================
@@ -22,6 +33,10 @@ public class AnimeList {
     // EFFECTS: adds an anime to the watchlist
     public void addAnime(Anime anime) {
         animes.add(anime);
+        if (repositoryBacked) {
+            repository.addAnime(anime);
+        }
+
         EventLog.getInstance().logEvent(
             new Event("Added anime: " + anime.getName() + " to watchlist.")
         );
@@ -31,6 +46,10 @@ public class AnimeList {
     // EFFECTS: removes the specified anime from the watchlist if present
     public void removeAnime(Anime anime) {
         animes.remove(anime);
+        if (repositoryBacked) {
+            repository.deleteAnime(anime);
+        }
+
         EventLog.getInstance().logEvent(
             new Event("Removed anime: " + anime.getName() + " from watchlist.")
         );
@@ -39,6 +58,22 @@ public class AnimeList {
     // EFFECTS: returns the list of anime stored
     public List<Anime> getAnimes() {
         return animes;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: reloads the watchlist from the database
+    public void reloadFromRepository() {
+        repositoryBacked = true;
+        animes.clear();
+        animes.addAll(repository.getAllAnime());
+    }
+
+    // MODIFIES: repository
+    // EFFECTS: persists changes made to an anime already in the watchlist
+    public void updateAnime(Anime anime) {
+        if (repositoryBacked) {
+            repository.updateAnime(anime);
+        }
     }
 
     // ================= Filtering Operations =================
@@ -71,16 +106,15 @@ public class AnimeList {
         return filteredList;
     }
 
-    // REQUIRES: targetSeason > 0
-    // EFFECTS: returns a list containing only the anime that have the matching number of seasons
+    // EFFECTS: returns a list containing only anime with the requested season count
     public List<Anime> filterBySeasonCount(int targetSeason) {
         List<Anime> filteredList = new ArrayList<>();
-       
+
         for (Anime anime : animes) {
             if (anime.getSeasons() == targetSeason) {
                 filteredList.add(anime);
             }
-        } 
+        }
         return filteredList;
     }
 

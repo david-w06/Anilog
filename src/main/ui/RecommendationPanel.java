@@ -127,10 +127,10 @@ public class RecommendationPanel extends JPanel {
 
     private List<Anime> getCatalogItems() {
         List<Anime> catalog = new ArrayList<>();
-        catalog.add(new Anime("Fullmetal Alchemist: Brotherhood", Arrays.asList("Action", "Adventure", "Fantasy"), 64, 1, "Plan to Watch", "Catalog", 1, 2009));
-        catalog.add(new Anime("Attack on Titan", Arrays.asList("Action", "Drama", "Fantasy"), 87, 4, "Plan to Watch", "Catalog", 2, 2013));
-        catalog.add(new Anime("Demon Slayer", Arrays.asList("Action", "Supernatural"), 55, 3, "Plan to Watch", "Catalog", 2, 2019));
-        catalog.add(new Anime("Steins Gate", Arrays.asList("Sci-Fi", "Thriller"), 24, 1, "Plan to Watch", "Catalog", 2, 2011));
+        catalog.add(new Anime("Fullmetal Alchemist: Brotherhood", Arrays.asList("Action", "Adventure", "Fantasy"), 64, "Plan to Watch", "Catalog", 1, 2009));
+        catalog.add(new Anime("Attack on Titan", Arrays.asList("Action", "Drama", "Fantasy"), 87, "Plan to Watch", "Catalog", 2, 2013));
+        catalog.add(new Anime("Demon Slayer", Arrays.asList("Action", "Supernatural"), 55,  "Plan to Watch", "Catalog", 2, 2019));
+        catalog.add(new Anime("Steins Gate", Arrays.asList("Sci-Fi", "Thriller"), 24,  "Plan to Watch", "Catalog", 2, 2011));
         return catalog;
     }
 
@@ -184,6 +184,7 @@ public class RecommendationPanel extends JPanel {
             if (anime.getCurrentEpisodeWatched() == 0) {
                 anime.setCurrentEpisodeWatched(1);
             }
+            animeList.updateAnime(anime);
             generateRecommendations();
         });
 
@@ -217,7 +218,7 @@ public class RecommendationPanel extends JPanel {
         JButton addBtn = Theme.makeRoundedButton("+ Add to Watchlist");
         addBtn.setFont(Theme.FONT_SMALL.deriveFont(11f));
         addBtn.addActionListener(e -> {
-            animeList.addAnime(new Anime(anime.getName(), anime.getGenre(), anime.getSeasonEpisodeCounts(), "Plan to Watch", anime.getNote(), anime.getPriority(), anime.getYear()));
+            animeList.addAnime(new Anime(anime.getName(), anime.getGenre(), anime.getEpisodeCount(), "Plan to Watch", anime.getNote(), anime.getPriority(), anime.getYear()));
             generateRecommendations();
         });
 
@@ -257,7 +258,7 @@ public class RecommendationPanel extends JPanel {
 
         String matchedStr = (matchedGenre != null && anime.getGenre().contains(matchedGenre)) ? "Matched: " + matchedGenre + "  •  " : "";
         JLabel detailLabel = Theme.makeBodyLabel(
-                matchedStr + anime.getSeasons() + " seasons  •  " 
+                matchedStr + " seasons  •  " 
                 + anime.getLength() + " eps  •  Status: " + anime.getStatus(), Theme.TEXT_DIM);
         detailLabel.setFont(Theme.FONT_SMALL);
 

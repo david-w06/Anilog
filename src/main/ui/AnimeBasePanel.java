@@ -31,17 +31,17 @@ public class AnimeBasePanel extends JPanel {
     // EFFECTS: populates stockLibrary with default stock anime items
     private void populateStockDatabase() {
         stockLibrary.add(new Anime("Fullmetal Alchemist: Brotherhood",
-                Arrays.asList("Action", "Adventure", "Fantasy"), 64, 1, "Not Watched", "Stock catalog item", 1, 2009));
+                Arrays.asList("Action", "Adventure", "Fantasy"), 64,  "Not Watched", "Stock catalog item", 1, 2009));
         stockLibrary.add(new Anime("Attack on Titan",
-                Arrays.asList("Action", "Drama", "Mystery"), 87, 4, "Not Watched", "Stock catalog item", 2, 2013));
+                Arrays.asList("Action", "Drama", "Mystery"), 87, "Not Watched", "Stock catalog item", 2, 2013));
         stockLibrary.add(new Anime("Demon Slayer",
-                Arrays.asList("Action", "Supernatural"), 55, 3, "Not Watched", "Stock catalog item", 2, 2019));
+                Arrays.asList("Action", "Supernatural"), 55,  "Not Watched", "Stock catalog item", 2, 2019));
         stockLibrary.add(new Anime("Spirited Away",
-                Arrays.asList("Animation", "Adventure", "Supernatural"), 1, 1, "Not Watched", "Movie", 3, 2001));
+                Arrays.asList("Animation", "Adventure", "Supernatural"), 1,  "Not Watched", "Movie", 3, 2001));
         stockLibrary.add(new Anime("Jujutsu Kaisen",
-                Arrays.asList("Action", "Fantasy"), 47, 2, "Not Watched", "Stock catalog item", 1, 2020));
+                Arrays.asList("Action", "Fantasy"), 47,  "Not Watched", "Stock catalog item", 1, 2020));
         stockLibrary.add(new Anime("Steins Gate",
-                Arrays.asList("Sci-Fi", "Thriller"), 24, 1, "Not Watched", "Stock catalog item", 2, 2011));
+                Arrays.asList("Sci-Fi", "Thriller"), 24,  "Not Watched", "Stock catalog item", 2, 2011));
     }
 
     // MODIFIES: this
@@ -109,8 +109,12 @@ public class AnimeBasePanel extends JPanel {
             }
         };
 
-        String imagePath = "/resources/images/" + anime.getName().toLowerCase().replace(" ", "_") + ".jpg";
+        String sanitized = anime.getName().replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase().trim().replace(" ", "_");
+        String imagePath = "/images/" + sanitized + ".jpg";
         java.net.URL imgURL = getClass().getResource(imagePath);
+        if (imgURL == null) {
+            imgURL = getClass().getResource("/resources/images/" + sanitized + ".jpg");
+        }
         if (imgURL != null) {
             ImageIcon icon = new ImageIcon(imgURL);
             Image scaledImg = icon.getImage().getScaledInstance(144, 224, Image.SCALE_SMOOTH);
@@ -137,7 +141,7 @@ public class AnimeBasePanel extends JPanel {
         genreLabel.setForeground(Theme.TEXT_DIM);
 
         JLabel episodeLabel = Theme.makeBodyLabel(anime.getLength() 
-                + " eps  ·  " + anime.getSeasons() + " season(s)", Theme.TEXT_DIM);
+                + " eps ", Theme.TEXT_DIM);
         episodeLabel.setFont(Theme.FONT_SMALL.deriveFont(9f));
 
         infoPanel.add(nameLabel);
@@ -151,7 +155,7 @@ public class AnimeBasePanel extends JPanel {
         addBtn.setFont(Theme.FONT_SMALL.deriveFont(10f));
         addBtn.addActionListener(e -> {
             Anime copy = new Anime(anime.getName(), new ArrayList<>(anime.getGenre()),
-                    anime.getLength(), anime.getSeasons(),
+                    anime.getLength(),
                     "Plan to Watch", "Added from Stock Base", anime.getPriority(), anime.getYear());
             activeWatchList.addAnime(copy);
             if (refreshCallback != null) {

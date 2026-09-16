@@ -5,17 +5,16 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.RoundRectangle2D;
-import java.io.File;
 
 import model.AnimeList;
 import model.Event;
 import model.EventLog;
-import persistence.JsonWriter;
+// import persistence.JsonWriter;
 
 // Main background JFrame that holds all panels
 public class MainWindow extends JFrame {
     
-    private static final String JSON_STORE = Theme.getDataFilePath("./data/animeList.json");
+    // private static final String JSON_STORE = Theme.getDataFilePath("./data/animeList.json");
     private AnimeList animeList;
     
     private NavigationPanel navigationPanel;
@@ -193,7 +192,6 @@ public class MainWindow extends JFrame {
         );
 
         if (choice == JOptionPane.YES_OPTION) {
-            saveWatchList();
             dispose();
             // print exit log
             printLog(EventLog.getInstance());
@@ -206,7 +204,7 @@ public class MainWindow extends JFrame {
     }
     
     // EFFECTS: invoke saving on the data layer
-    private void saveWatchList() {
+/*     private void saveWatchList() {
         try {
             File file = new File(JSON_STORE);
             File parentDir = file.getParentFile();
@@ -223,6 +221,7 @@ public class MainWindow extends JFrame {
                         + JSON_STORE + "\n" + ex.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+*/
 
     // EFFECTS: creating a top layer plane to disply startup animation
     private void startSplashAnimation() {
