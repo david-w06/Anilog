@@ -113,11 +113,8 @@ public class AnimeConsoleUI {
             }
         }
 
-        System.out.print("Enter the total number of episodes: ");
+        System.out.print("Enter total episode length: ");
         int length = Integer.parseInt(input.nextLine());
-       
-        System.out.print("Enter the number of seasons: ");
-        int seasons = Integer.parseInt(input.nextLine());
         
         System.out.print("Enter status (Not Watched, Watching, Completed, Plan to Watch): ");
         String status = input.nextLine();
@@ -131,7 +128,7 @@ public class AnimeConsoleUI {
         System.out.print("Enter year released: ");
         int year = Integer.parseInt(input.nextLine());
 
-        Anime newAnime = new Anime(name, genres, length, seasons, status, note, priority, year);
+        Anime newAnime = new Anime(name, genres, length, status, note, priority, year);
         animeList.addAnime(newAnime);
         System.out.println("Successfully added " + name);
     }
@@ -182,7 +179,6 @@ public class AnimeConsoleUI {
             System.out.println("Genres: " + String.join(", ", a.getGenre()));
             System.out.println("Status: " + a.getStatus());
             System.out.println("Progress: " + a.getCurrentEpisodeWatched() + "/" + a.getLength() + " episodes");
-            System.out.println("Seasons: " + a.getSeasons());
             System.out.println("Priority: " + a.getPriority());
             System.out.println("Rating: " + (a.getRating() == -1.0 ? "Unrated" : a.getRating()));
             System.out.println("Note: " + a.getNote());
@@ -257,7 +253,7 @@ public class AnimeConsoleUI {
     // EFFECTS: lets the user filter the anime list
     @SuppressWarnings("methodlength")
     private void filterAnime() {
-        System.out.print("Filter by (Genre, Status, Season): ");
+        System.out.print("Filter by (Genre, Status): ");
         String choice = input.nextLine();
         if (choice.equalsIgnoreCase("Genre")) {
             System.out.print("Enter genre: ");
@@ -272,15 +268,6 @@ public class AnimeConsoleUI {
             System.out.print("Enter status (Not Watched, Watching, Completed, Plan to Watch): ");
             String status = input.nextLine();
             List<Anime> filtered = animeList.filterByStatus(status);
-            if (filtered.isEmpty()) {
-                System.out.println("No matching anime found.");
-            } else {
-                displayNumberedAnimeList(filtered);
-            }
-        } else if (choice.equalsIgnoreCase("Season")) {
-            System.out.print("Enter number of seasons: ");
-            int seasons = Integer.parseInt(input.nextLine());
-            List<Anime> filtered = animeList.filterBySeasonCount(seasons);
             if (filtered.isEmpty()) {
                 System.out.println("No matching anime found.");
             } else {

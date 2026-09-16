@@ -218,7 +218,7 @@ public class RecommendationPanel extends JPanel {
         JButton addBtn = Theme.makeRoundedButton("+ Add to Watchlist");
         addBtn.setFont(Theme.FONT_SMALL.deriveFont(11f));
         addBtn.addActionListener(e -> {
-            animeList.addAnime(new Anime(anime.getName(), anime.getGenre(), anime.getEpisodeCount(), "Plan to Watch", anime.getNote(), anime.getPriority(), anime.getYear()));
+            animeList.addAnime(new Anime(anime.getName(), anime.getGenre(), anime.getLength(), "Plan to Watch", anime.getNote(), anime.getPriority(), anime.getYear()));
             generateRecommendations();
         });
 
@@ -247,7 +247,7 @@ public class RecommendationPanel extends JPanel {
     }
 
     // REQUIRES: anime != null
-    // EFFECTS: constructs and returns center column panel containing anime title, matched genre, season, and episode
+    // EFFECTS: constructs and returns center column panel containing anime title and matched genre
     private JPanel makeDetailPanel(Anime anime, String matchedGenre) {
         JPanel centerCol = new JPanel(new GridLayout(2, 1, 0, 4));
         centerCol.setOpaque(false);
@@ -258,8 +258,7 @@ public class RecommendationPanel extends JPanel {
 
         String matchedStr = (matchedGenre != null && anime.getGenre().contains(matchedGenre)) ? "Matched: " + matchedGenre + "  •  " : "";
         JLabel detailLabel = Theme.makeBodyLabel(
-                matchedStr + " seasons  •  " 
-                + anime.getLength() + " eps  •  Status: " + anime.getStatus(), Theme.TEXT_DIM);
+                matchedStr + anime.getLength() + " eps  •  Status: " + anime.getStatus(), Theme.TEXT_DIM);
         detailLabel.setFont(Theme.FONT_SMALL);
 
         centerCol.add(nameLabel);

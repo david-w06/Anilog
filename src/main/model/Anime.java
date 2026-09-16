@@ -1,6 +1,5 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,60 +9,29 @@ public class Anime {
     private String name;
     private List<String> genre; 
     private int length;
-    private int seasons;
-    private List<Integer> seasonEpisodeCounts;
-    private int episodeCount;
     private String status; // "Not Watched", "Watching", "Completed", or "Plan to Watch"
     private int year;
     private String note;
     private int priority; 
     private int currentEpisodeWatched;
     private double rating; // from 0.0 to 10.0
+    private String coverImage;
+    private List<String> tags;
 
 
     // MODIFIES: this
-    // EFFECTS: constructs an anime entry
-    public Anime(String name, List<String> genre, int episodeCount, String status, String note, int priority, int year) {
-        this(name, genre, episodeCount, 1, status, note, priority, year);
-    }
-
-    public Anime(String name, List<String> genre, int length, int seasons,
-            String status, String note, int priority, int year) {
+    // EFFECTS: constructs an anime entry with the total episode length
+    public Anime(String name, List<String> genre, int length, String status,
+            String note, int priority, int year) {
         this.name = name;
         this.genre = genre;
-        this.seasons = seasons <= 0 ? 1 : seasons;
-        this.seasonEpisodeCounts = new ArrayList<>();
-        distributeLengthToSeasons(length, this.seasons);
-        this.episodeCount = length;
+        this.length = length;
         this.status = status;
         this.note = note;
         this.priority = priority;
         this.currentEpisodeWatched = 0;
         this.rating = -1.0;
         this.year = year;
-    }
-
-    public Anime(String name, List<String> genre, List<Integer> seasonEpisodeCounts,
-            String status, String note, int priority, int year) {
-        this.name = name;
-        this.genre = genre;
-        setSeasonEpisodeCounts(seasonEpisodeCounts);
-        this.status = status;
-        this.note = note;
-        this.priority = priority;
-        this.currentEpisodeWatched = 0;
-        this.rating = -1.0;
-        this.year = year;
-    }
-
-    private void distributeLengthToSeasons(int totalLength, int numberOfSeasons) {
-        int base = totalLength / numberOfSeasons;
-        int remainder = totalLength % numberOfSeasons;
-        for (int index = 0; index < numberOfSeasons; index++) {
-            seasonEpisodeCounts.add(base + (index < remainder ? 1 : 0));
-        }
-        this.length = totalLength;
-        this.episodeCount = totalLength;
     }
 
     // ================= Accessors =================
@@ -78,18 +46,6 @@ public class Anime {
 
     public int getLength() {
         return length;
-    }
-
-    public int getEpisodeCount() {
-        return episodeCount;
-    }
-
-    public int getSeasons() {
-        return seasons;
-    }
-
-    public List<Integer> getSeasonEpisodeCounts() {
-        return new ArrayList<>(seasonEpisodeCounts);
     }
 
     public String getStatus() {
@@ -119,35 +75,10 @@ public class Anime {
 
 // ================= Mutators =================
 
-    // REQUIRES: counts != null && !counts.isEmpty()
     // MODIFIES: this
-    // EFFECTS: sets episode count for anime
-    public void setEpisodeCounts(int counts) {
-        this.episodeCount = counts;
-        this.length = counts;
-    }
-
-    public void setSeasons(int season) {
-        if (season > 0 && this.seasons != season) {
-            this.seasons = season;
-            this.seasonEpisodeCounts = new ArrayList<>();
-            distributeLengthToSeasons(this.length, season);
-        }
-    }
-
-    public void setSeasonEpisodeCounts(List<Integer> counts) {
-        if (counts == null || counts.isEmpty()) {
-            return;
-        }
-        this.seasonEpisodeCounts = new ArrayList<>();
-        this.length = 0;
-        for (int count : counts) {
-            int validCount = Math.max(0, count);
-            this.seasonEpisodeCounts.add(validCount);
-            this.length += validCount;
-        }
-        this.episodeCount = this.length;
-        this.seasons = this.seasonEpisodeCounts.size();
+    // EFFECTS: sets the total episode length
+    public void setLength(int length) {
+        this.length = length;
     }
 
     // REQUIRES: status is one of "Not Watched", "Watching", "Completed", or "Plan to Watch"
@@ -223,8 +154,6 @@ public class Anime {
         json.put("name", name);
         json.put("genres", genre);
         json.put("length", length);
-        json.put("seasons", seasons);
-        json.put("seasonEpisodeCounts", seasonEpisodeCounts);
         json.put("status", status);
         json.put("note", note);
         json.put("priority", priority);
@@ -240,5 +169,21 @@ public class Anime {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getCoverImage() {
+        return coverImage;
+    }
+
+    public void setCoverImage(String coverImage) {
+        this.coverImage = coverImage;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }

@@ -24,7 +24,6 @@ public class JsonReaderTest {
         Anime frieren = list.getAnimes().get(0);
         assertEquals("Frieren", frieren.getName());
         assertEquals(28, frieren.getLength());
-        assertEquals(1, frieren.getSeasons());
         assertEquals("Completed", frieren.getStatus());
         assertEquals("Masterpiece", frieren.getNote());
         assertEquals(1, frieren.getPriority());
@@ -34,7 +33,6 @@ public class JsonReaderTest {
         Anime naruto = list.getAnimes().get(1);
         assertEquals("Naruto", naruto.getName());
         assertEquals(100, naruto.getLength());
-        assertEquals(5, naruto.getSeasons());
         assertEquals("Watching", naruto.getStatus());
         assertEquals("Classic shonen", naruto.getNote());
         assertEquals(2, naruto.getPriority());

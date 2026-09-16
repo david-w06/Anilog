@@ -106,18 +106,6 @@ public class AnimeList {
         return filteredList;
     }
 
-    // EFFECTS: returns a list containing only anime with the requested season count
-    public List<Anime> filterBySeasonCount(int targetSeason) {
-        List<Anime> filteredList = new ArrayList<>();
-
-        for (Anime anime : animes) {
-            if (anime.getSeasons() == targetSeason) {
-                filteredList.add(anime);
-            }
-        }
-        return filteredList;
-    }
-
     // REQUIRES: targetYear > 0
     // EFFECTS: returns a list containing only the anime released in the target year
     public List<Anime> filterByReleaseYear(int targetYear) {

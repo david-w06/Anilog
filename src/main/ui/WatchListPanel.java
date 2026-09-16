@@ -299,7 +299,7 @@ public class WatchListPanel extends JPanel {
         Object[] message = {
             Theme.makeBodyLabel("Anime Title:", Theme.TEXT_LIGHT), nameField,
             Theme.makeBodyLabel("Genres (comma separated):", Theme.TEXT_LIGHT), genreField,
-            Theme.makeBodyLabel("Episodes Count:", Theme.TEXT_LIGHT), epsField,
+            Theme.makeBodyLabel("Total Length:", Theme.TEXT_LIGHT), epsField,
             Theme.makeBodyLabel("Initial Status:", Theme.TEXT_LIGHT), statusBox,
             Theme.makeBodyLabel("Priority Rank (1 = High):", Theme.TEXT_LIGHT), priorityField,
             Theme.makeBodyLabel("Personal Notes:", Theme.TEXT_LIGHT), noteField,
@@ -357,7 +357,7 @@ public class WatchListPanel extends JPanel {
             } catch (NumberFormatException ex) {
                 Theme.showStyledMessage(
                         this,
-                        "Invalid numerical inputs. Please check season/episode counts or priorities.",
+                        "Invalid numerical inputs. Please check length or priority.",
                         "Input Error",
                         JOptionPane.ERROR_MESSAGE
                 );
@@ -389,7 +389,7 @@ public class WatchListPanel extends JPanel {
 
         Object[] message = {
             Theme.makeBodyLabel("Update Watched Episodes (0 to " + selected.getLength() + "):", Theme.TEXT_LIGHT), epWatchedField,
-            Theme.makeBodyLabel("Episodes Count:", Theme.TEXT_LIGHT), epsField,
+            Theme.makeBodyLabel("Total Length:", Theme.TEXT_LIGHT), epsField,
             Theme.makeBodyLabel("Update Watch Status:", Theme.TEXT_LIGHT), statusBox,
             Theme.makeBodyLabel("Update Rating (0.0 to 10.0, leave empty for unrated):", Theme.TEXT_LIGHT), ratingField,
             Theme.makeBodyLabel("Priority Rank:", Theme.TEXT_LIGHT), priorityField,
@@ -400,15 +400,11 @@ public class WatchListPanel extends JPanel {
                 + selected.getName(), JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             try {
-                String epBreakdownStr = epsField.getText().trim();
-                if (!epBreakdownStr.isEmpty()) {
-                    List<Integer> newCounts = new ArrayList<>();
-                    for (String part : epBreakdownStr.split("\\s*,\\s*")) {
-                        if (!part.isEmpty()) {
-                            newCounts.add(Integer.parseInt(part));
-                        }
-                    }
+                int newLength = Integer.parseInt(epsField.getText().trim());
+                if (newLength < 0) {
+                    throw new IllegalArgumentException("Length cannot be negative.");
                 }
+                selected.setLength(newLength);
 
                 int newEp = Integer.parseInt(epWatchedField.getText().trim());
                 if (newEp < 0 || newEp > selected.getLength()) {

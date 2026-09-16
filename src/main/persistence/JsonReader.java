@@ -72,7 +72,6 @@ public class JsonReader {
         }
 
         int length = jsonObject.getInt("length");
-        int seasons = jsonObject.getInt("seasons");
         String status = jsonObject.getString("status");
         String note = jsonObject.getString("note");
         int priority = jsonObject.getInt("priority");
@@ -80,17 +79,7 @@ public class JsonReader {
         double rating = jsonObject.getDouble("rating");
         int year = jsonObject.has("year") ? jsonObject.getInt("year") : 2024;
 
-        Anime anime;
-        if (jsonObject.has("seasonEpisodeCounts")) {
-            JSONArray jsonCounts = jsonObject.getJSONArray("seasonEpisodeCounts");
-            List<Integer> counts = new ArrayList<>();
-            for (Object c : jsonCounts) {
-                counts.add((Integer) c);
-            }
-            anime = new Anime(name, genres, counts, status, note, priority, year);
-        } else {
-            anime = new Anime(name, genres, length, seasons, status, note, priority, year);
-        }
+        Anime anime = new Anime(name, genres, length, status, note, priority, year);
         anime.setCurrentEpisodeWatched(currentEpisodeWatched);
         anime.setRating(rating);
         list.addAnime(anime);

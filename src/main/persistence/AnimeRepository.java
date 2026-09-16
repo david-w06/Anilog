@@ -47,8 +47,7 @@ public class AnimeRepository {
                 CREATE TABLE IF NOT EXISTS anime (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL,
-                    episodes INTEGER,
-                    seasons INTEGER,
+                    length INTEGER,
                     status TEXT NOT NULL,
                     rating REAL,
                     priority INTEGER,
@@ -85,7 +84,8 @@ public class AnimeRepository {
             }
 
             ensureColumn(connection, "current_episode_watched", "INTEGER");
-            ensureColumn(connection, "seasons", "INTEGER");
+            ensureColumn(connection, "length", "INTEGER");
+            migrateEpisodesToLength(connection);
             ensureColumn(connection, "year", "INTEGER");
 
             try (PreparedStatement statement =
@@ -120,14 +120,26 @@ public class AnimeRepository {
             statement.executeUpdate();
         }
     }
+
+    private void migrateEpisodesToLength(Connection connection) throws SQLException {
+        String copyLength = "UPDATE anime SET length = episodes "
+                + "WHERE length IS NULL AND episodes IS NOT NULL";
+        try (PreparedStatement statement = connection.prepareStatement(copyLength)) {
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            if (!e.getMessage().contains("no such column: episodes")) {
+                throw e;
+            }
+        }
+    }
     
     public void addAnime(Anime anime) {
         String insertAnime = """
                 INSERT INTO anime
-                    (title, episodes, seasons, status, rating, priority, notes,
+                    (title, length, status, rating, priority, notes,
                     current_episode_watched, year)
                 VALUES
-                    (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         String insertGenre = """
@@ -161,13 +173,12 @@ public class AnimeRepository {
 
                     statement.setString(1, anime.getName());
                     statement.setInt(2, anime.getLength());
-                    statement.setInt(3, anime.getSeasons());
-                    statement.setString(4, anime.getStatus());
-                    statement.setDouble(5, anime.getRating());
-                    statement.setInt(6, anime.getPriority());
-                    statement.setString(7, anime.getNote());
-                    statement.setInt(8, anime.getCurrentEpisodeWatched());
-                    statement.setInt(9, anime.getYear());
+                    statement.setString(3, anime.getStatus());
+                    statement.setDouble(4, anime.getRating());
+                    statement.setInt(5, anime.getPriority());
+                    statement.setString(6, anime.getNote());
+                    statement.setInt(7, anime.getCurrentEpisodeWatched());
+                    statement.setInt(8, anime.getYear());
 
                     statement.executeUpdate();
 
@@ -245,8 +256,7 @@ public class AnimeRepository {
                 SELECT
                     anime.id,
                     anime.title,
-                    anime.episodes,
-                    anime.seasons,
+                    anime.length,
                     anime.status,
                     anime.rating,
                     anime.priority,
@@ -279,8 +289,7 @@ public class AnimeRepository {
                     currentAnime = new Anime(
                             result.getString("title"),
                             new ArrayList<>(),
-                            result.getInt("episodes"),
-                            result.getInt("seasons"),
+                            result.getInt("length"),
                             result.getString("status"),
                             result.getString("notes"),
                             result.getInt("priority"),
@@ -315,8 +324,7 @@ public class AnimeRepository {
         String updateAnime = """
                 UPDATE anime
                 SET title = ?,
-                    episodes = ?,
-                    seasons = ?,
+                    length = ?,
                     status = ?,
                     rating = ?,
                     priority = ?,
@@ -357,14 +365,13 @@ public class AnimeRepository {
 
                     statement.setString(1, anime.getName());
                     statement.setInt(2, anime.getLength());
-                    statement.setInt(3, anime.getSeasons());
-                    statement.setString(4, anime.getStatus());
-                    statement.setDouble(5, anime.getRating());
-                    statement.setInt(6, anime.getPriority());
-                    statement.setString(7, anime.getNote());
-                    statement.setInt(8, anime.getCurrentEpisodeWatched());
-                    statement.setInt(9, anime.getYear());
-                    statement.setInt(10, anime.getId());
+                    statement.setString(3, anime.getStatus());
+                    statement.setDouble(4, anime.getRating());
+                    statement.setInt(5, anime.getPriority());
+                    statement.setString(6, anime.getNote());
+                    statement.setInt(7, anime.getCurrentEpisodeWatched());
+                    statement.setInt(8, anime.getYear());
+                    statement.setInt(9, anime.getId());
 
                     statement.executeUpdate();
                 }
