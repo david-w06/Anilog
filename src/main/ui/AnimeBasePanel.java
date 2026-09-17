@@ -3,45 +3,34 @@ package ui;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import model.Anime;
 import model.AnimeList;
+import service.AniListService;
 
 // JPanel that represents the tab for anime base
 public class AnimeBasePanel extends JPanel {
 
     private AnimeList activeWatchList;
-    private List<Anime> stockLibrary;
+    private AniListService aniListService;
+    private List<Anime> searchResults;
     private Runnable refreshCallback;
+    private JPanel gridPanel;
 
     // REQUIRES: activeWatchList != null
     // MODIFIES: this
     // EFFECTS: constructs panel, populates stock database, and initializes the UI components
     public AnimeBasePanel(AnimeList activeWatchList, Runnable refreshCallback) {
         this.activeWatchList = activeWatchList;
-        this.stockLibrary = new ArrayList<>();
+        this.aniListService = new AniListService();
+        this.searchResults = new ArrayList<>();
         this.refreshCallback = refreshCallback;
-        populateStockDatabase();
-        initializePanel();
-    }
 
-    // MODIFIES: this
-    // EFFECTS: populates stockLibrary with default stock anime items
-    private void populateStockDatabase() {
-        stockLibrary.add(new Anime("Fullmetal Alchemist: Brotherhood",
-                Arrays.asList("Action", "Adventure", "Fantasy"), 64,  "Not Watched", "Stock catalog item", 1, 2009));
-        stockLibrary.add(new Anime("Attack on Titan",
-                Arrays.asList("Action", "Drama", "Mystery"), 87, "Not Watched", "Stock catalog item", 2, 2013));
-        stockLibrary.add(new Anime("Demon Slayer",
-                Arrays.asList("Action", "Supernatural"), 55,  "Not Watched", "Stock catalog item", 2, 2019));
-        stockLibrary.add(new Anime("Spirited Away",
-                Arrays.asList("Animation", "Adventure", "Supernatural"), 1,  "Not Watched", "Movie", 3, 2001));
-        stockLibrary.add(new Anime("Jujutsu Kaisen",
-                Arrays.asList("Action", "Fantasy"), 47,  "Not Watched", "Stock catalog item", 1, 2020));
-        stockLibrary.add(new Anime("Steins Gate",
-                Arrays.asList("Sci-Fi", "Thriller"), 24,  "Not Watched", "Stock catalog item", 2, 2011));
+        initializePanel();
     }
 
     // MODIFIES: this
@@ -51,20 +40,47 @@ public class AnimeBasePanel extends JPanel {
         setBackground(Theme.BG_DARK);
 
         // Header
-        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 16));
+        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 12));
         header.setBackground(Theme.PANEL_BG);
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Theme.BORDER_DIM));
+        header.setBorder(BorderFactory.createMatteBorder(
+                0, 0, 1, 0, Theme.BORDER_DIM));
+
         header.add(Theme.makeTitleLabel("Anime Base"));
+
+        JTextField searchField = new JTextField(25);
+        searchField.setFont(Theme.FONT_BODY);
+        searchField.setForeground(Color.WHITE);
+        searchField.setBackground(Theme.BG_DARK);
+
+        JButton searchButton = Theme.makeRoundedButton("Search");
+
+        header.add(searchField);
+        header.add(searchButton);
+
+        searchButton.addActionListener(e -> {
+            String search = searchField.getText().trim();
+
+            if (search.isEmpty()) {
+                return;
+            }
+
+            performSearch(search);
+        });
+
+        searchField.addActionListener(e -> {
+            String search = searchField.getText().trim();
+
+            if (!search.isEmpty()) {
+                performSearch(search);
+            }
+        });
+
         add(header, BorderLayout.NORTH);
 
         // Card Grid
-        JPanel gridPanel = new JPanel(new GridLayout(0, 3, 18, 18));
+        gridPanel = new JPanel(new GridLayout(0, 3, 18, 18));
         gridPanel.setOpaque(false);
         gridPanel.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
-
-        for (Anime anime : stockLibrary) {
-            gridPanel.add(createStockCard(anime));
-        }
 
         JPanel gridWrapper = new JPanel(new BorderLayout());
         gridWrapper.setBackground(Theme.BG_DARK);
@@ -82,7 +98,7 @@ public class AnimeBasePanel extends JPanel {
     // REQUIRES: anime != null
     // EFFECTS: creates a styled card panel displaying cover art, info details, and an add-to-watchlist action button
     @SuppressWarnings("methodlength")
-    private JPanel createStockCard(Anime anime) {
+    private JPanel createAnimeCard(Anime anime) {
         JPanel card = Theme.makeRoundedPanel(Theme.PANEL_BG, 16);
         card.setLayout(new BorderLayout(0, 10));
         card.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
@@ -109,44 +125,86 @@ public class AnimeBasePanel extends JPanel {
             }
         };
 
-        String sanitized = anime.getName().replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase().trim().replace(" ", "_");
-        String imagePath = "/images/" + sanitized + ".jpg";
-        java.net.URL imgURL = getClass().getResource(imagePath);
-        if (imgURL == null) {
-            imgURL = getClass().getResource("/resources/images/" + sanitized + ".jpg");
-        }
-        if (imgURL != null) {
-            ImageIcon icon = new ImageIcon(imgURL);
-            Image scaledImg = icon.getImage().getScaledInstance(144, 224, Image.SCALE_SMOOTH);
-            JLabel imageLabel = new JLabel(new ImageIcon(scaledImg));
-            imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            imageLabel.setPreferredSize(new Dimension(144, 224));
-            card.add(imageLabel, BorderLayout.NORTH);
+        String imageUrl = anime.getCoverImage();
+
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                URL url = new URL(imageUrl);
+
+                ImageIcon icon = new ImageIcon(url);
+
+                Image scaledImg = icon.getImage().getScaledInstance(
+                        144,
+                        224,
+                        Image.SCALE_SMOOTH
+                );
+
+                JLabel imageLabel = new JLabel(new ImageIcon(scaledImg));
+                imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                imageLabel.setPreferredSize(new Dimension(144, 224));
+
+                card.add(imageLabel, BorderLayout.NORTH);
+
+            } catch (Exception e) {
+                coverPlaceholder.setPreferredSize(new Dimension(144, 224));
+                coverPlaceholder.setOpaque(false);
+                card.add(coverPlaceholder, BorderLayout.NORTH);
+            }
         } else {
             coverPlaceholder.setPreferredSize(new Dimension(144, 224));
             coverPlaceholder.setOpaque(false);
             card.add(coverPlaceholder, BorderLayout.NORTH);
         }
-
         // Info section
-        JPanel infoPanel = new JPanel(new GridLayout(3, 1, 0, 3));
+        JPanel infoPanel = new JPanel(new GridLayout(4, 1, 0, 3));
         infoPanel.setOpaque(false);
 
         JLabel nameLabel = new JLabel(anime.getName());
         nameLabel.setFont(Theme.FONT_BODY.deriveFont(Font.BOLD, 11f));
         nameLabel.setForeground(Color.WHITE);
 
-        JLabel genreLabel = new JLabel(String.join("  •  ", anime.getGenre()));
-        genreLabel.setFont(Theme.FONT_SMALL.deriveFont(9f));
-        genreLabel.setForeground(Theme.TEXT_DIM);
+        String yearText = anime.getYear() > 0
+                ? String.valueOf(anime.getYear())
+                : "Unknown year";
 
-        JLabel episodeLabel = Theme.makeBodyLabel(anime.getLength() 
-                + " eps ", Theme.TEXT_DIM);
-        episodeLabel.setFont(Theme.FONT_SMALL.deriveFont(9f));
+        String episodeText = anime.getLength() > 0
+                ? anime.getLength() + " eps"
+                : "Unknown episodes";
+
+        JLabel detailsLabel = Theme.makeBodyLabel(
+                yearText + "  •  " + episodeText,
+                Theme.TEXT_DIM);
+        detailsLabel.setFont(Theme.FONT_SMALL.deriveFont(9f));
+
+        String genreText = anime.getGenre().isEmpty()
+                ? "No genres"
+                : String.join("  •  ", anime.getGenre());
+
+        JLabel genreLabel = Theme.makeBodyLabel(
+                genreText,
+                Theme.TEXT_DIM);
+        genreLabel.setFont(Theme.FONT_SMALL.deriveFont(9f));
+
+        String tagText;
+
+        if (anime.getTags().isEmpty()) {
+            tagText = "No tags";
+        } else {
+            int numberOfTagsToShow = Math.min(3, anime.getTags().size());
+            tagText = String.join(
+                    "  •  ",
+                    anime.getTags().subList(0, numberOfTagsToShow));
+        }
+
+        JLabel tagLabel = Theme.makeBodyLabel(
+                tagText,
+                Theme.TEXT_DIM);
+        tagLabel.setFont(Theme.FONT_SMALL.deriveFont(8f));
 
         infoPanel.add(nameLabel);
+        infoPanel.add(detailsLabel);
         infoPanel.add(genreLabel);
-        infoPanel.add(episodeLabel);
+        infoPanel.add(tagLabel);
 
         card.add(infoPanel, BorderLayout.CENTER);
 
@@ -154,10 +212,21 @@ public class AnimeBasePanel extends JPanel {
         JButton addBtn = Theme.makeRoundedButton("+ Add to Watchlist");
         addBtn.setFont(Theme.FONT_SMALL.deriveFont(10f));
         addBtn.addActionListener(e -> {
-            Anime copy = new Anime(anime.getName(), new ArrayList<>(anime.getGenre()),
-                    anime.getLength(),
-                    "Plan to Watch", "Added from Stock Base", anime.getPriority(), anime.getYear());
-            activeWatchList.addAnime(copy);
+            Anime copy = new Anime(
+                anime.getName(),
+                new ArrayList<>(anime.getGenre()),
+                anime.getLength(),
+                "Plan to Watch",
+                "Added from AniList",
+                anime.getPriority(),
+                anime.getYear()
+        );
+
+        copy.setTags(new ArrayList<>(anime.getTags()));
+        copy.setCoverImage(anime.getCoverImage());
+        copy.setAniListId(anime.getAniListId());
+
+        activeWatchList.addAnime(copy);
             if (refreshCallback != null) {
                 refreshCallback.run();
             } 
@@ -199,5 +268,57 @@ public class AnimeBasePanel extends JPanel {
         });
         bar.setBackground(Theme.BG_DARK);
         bar.setPreferredSize(new Dimension(6, 0));
+    }
+
+    private void performSearch(String search) {
+        try {
+            List<Anime> results = aniListService.searchAnime(search);
+
+            searchResults = results;
+
+            gridPanel.removeAll();
+
+            for (Anime anime : searchResults) {
+                gridPanel.add(createAnimeCard(anime));
+            }
+
+            gridPanel.revalidate();
+            gridPanel.repaint();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Theme.showStyledMessage(
+                    this,
+                    "Unable to search AniList.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    private void showAnimeDetails(Anime anime) {
+        String genres = String.join(", ", anime.getGenre());
+
+        String tags;
+
+        if (anime.getTags().isEmpty()) {
+            tags = "None";
+        } else {
+            tags = String.join(", ", anime.getTags());
+        }
+
+        String message =
+                "Title: " + anime.getName()
+                + "\nYear: " + anime.getYear()
+                + "\nEpisodes: " + anime.getLength()
+                + "\n\nGenres:\n" + genres
+                + "\n\nTags:\n" + tags;
+
+        Theme.showStyledMessage(
+                this,
+                message,
+                "Anime Details",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 }

@@ -33,6 +33,7 @@ public class AnimeTest {
         assertEquals(0, testAnime.getCurrentEpisodeWatched());
         assertEquals(-1.0, testAnime.getRating(), 0.001);
         assertEquals(2023, testAnime.getYear());
+        assertEquals(0, testAnime.getAniListId());
     }
 
     @Test
@@ -92,6 +93,12 @@ public class AnimeTest {
     }
 
     @Test
+    public void testAniListId() {
+        testAnime.setAniListId(154587);
+        assertEquals(154587, testAnime.getAniListId());
+    }
+
+    @Test
     public void testToJson() {
         JSONObject json = testAnime.toJson();
 
@@ -102,6 +109,7 @@ public class AnimeTest {
         assertEquals(1, json.getInt("priority"));
         assertEquals(0, json.getInt("currentEpisodeWatched"));
         assertEquals(-1.0, json.getDouble("rating"), 0.001);
+        assertEquals(0, json.getInt("aniListId"));
 
         JSONArray jsonGenres = json.getJSONArray("genres");
         assertEquals(2, jsonGenres.length());

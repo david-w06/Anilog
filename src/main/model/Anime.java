@@ -1,11 +1,13 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Anime {
     private int id;
+    private int aniListId;
     private String name;
     private List<String> genre; 
     private int length;
@@ -24,6 +26,7 @@ public class Anime {
     public Anime(String name, List<String> genre, int length, String status,
             String note, int priority, int year) {
         this.name = name;
+        this.aniListId = 0;
         this.genre = genre;
         this.length = length;
         this.status = status;
@@ -32,6 +35,8 @@ public class Anime {
         this.currentEpisodeWatched = 0;
         this.rating = -1.0;
         this.year = year;
+        this.coverImage = "";
+        this.tags = new ArrayList<>();
     }
 
     // ================= Accessors =================
@@ -152,6 +157,7 @@ public class Anime {
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("name", name);
+        json.put("aniListId", aniListId);
         json.put("genres", genre);
         json.put("length", length);
         json.put("status", status);
@@ -169,6 +175,14 @@ public class Anime {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getAniListId() {
+        return aniListId;
+    }
+
+    public void setAniListId(int aniListId) {
+        this.aniListId = aniListId;
     }
 
     public String getCoverImage() {

@@ -80,6 +80,7 @@ public class JsonReader {
         int year = jsonObject.has("year") ? jsonObject.getInt("year") : 2024;
 
         Anime anime = new Anime(name, genres, length, status, note, priority, year);
+        anime.setAniListId(jsonObject.optInt("aniListId", 0));
         anime.setCurrentEpisodeWatched(currentEpisodeWatched);
         anime.setRating(rating);
         list.addAnime(anime);

@@ -53,7 +53,9 @@ public class AnimeRepository {
                     priority INTEGER,
                     notes TEXT,
                     current_episode_watched INTEGER,
-                    year INTEGER
+                    year INTEGER,
+                    cover_image TEXT,
+                    ani_list_id INTEGER NOT NULL DEFAULT 0
                 )
                 """;
 
@@ -76,6 +78,25 @@ public class AnimeRepository {
                 )
                 """;
 
+        String createTagTable = """
+                CREATE TABLE IF NOT EXISTS tags (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL UNIQUE
+                )
+                """;
+
+        String createAnimeTagTable = """
+                CREATE TABLE IF NOT EXISTS anime_tags (
+                    anime_id INTEGER NOT NULL,
+                    tag_id INTEGER NOT NULL,
+
+                    PRIMARY KEY (anime_id, tag_id),
+
+                    FOREIGN KEY (anime_id) REFERENCES anime(id),
+                    FOREIGN KEY (tag_id) REFERENCES tags(id)
+                )
+                """;
+
         try (Connection connection = connect()) {
 
             try (PreparedStatement statement =
@@ -87,6 +108,8 @@ public class AnimeRepository {
             ensureColumn(connection, "length", "INTEGER");
             migrateEpisodesToLength(connection);
             ensureColumn(connection, "year", "INTEGER");
+            ensureColumn(connection, "cover_image", "TEXT");
+            ensureColumn(connection, "ani_list_id", "INTEGER NOT NULL DEFAULT 0");
 
             try (PreparedStatement statement =
                     connection.prepareStatement(createGenreTable)) {
@@ -95,6 +118,16 @@ public class AnimeRepository {
 
             try (PreparedStatement statement =
                     connection.prepareStatement(createAnimeGenreTable)) {
+                statement.executeUpdate();
+            }
+
+            try (PreparedStatement statement =
+                    connection.prepareStatement(createTagTable)) {
+                statement.executeUpdate();
+            }
+
+            try (PreparedStatement statement =
+                    connection.prepareStatement(createAnimeTagTable)) {
                 statement.executeUpdate();
             }
 
@@ -137,9 +170,9 @@ public class AnimeRepository {
         String insertAnime = """
                 INSERT INTO anime
                     (title, length, status, rating, priority, notes,
-                    current_episode_watched, year)
+                    current_episode_watched, year, cover_image, ani_list_id)
                 VALUES
-                    (?, ?, ?, ?, ?, ?, ?, ?)
+                    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         String insertGenre = """
@@ -154,6 +187,21 @@ public class AnimeRepository {
 
         String insertAnimeGenre = """
                 INSERT INTO anime_genres (anime_id, genre_id)
+                VALUES (?, ?)
+                """;
+
+        String insertTag = """
+                INSERT OR IGNORE INTO tags (name)
+                VALUES (?)
+                """;
+
+        String findTag = """
+                SELECT id FROM tags
+                WHERE name = ?
+                """;
+
+        String insertAnimeTag = """
+                INSERT INTO anime_tags (anime_id, tag_id)
                 VALUES (?, ?)
                 """;
 
@@ -179,6 +227,8 @@ public class AnimeRepository {
                     statement.setString(6, anime.getNote());
                     statement.setInt(7, anime.getCurrentEpisodeWatched());
                     statement.setInt(8, anime.getYear());
+                    statement.setString(9, anime.getCoverImage());
+                    statement.setInt(10, anime.getAniListId());
 
                     statement.executeUpdate();
 
@@ -235,7 +285,45 @@ public class AnimeRepository {
                     }
                 }
 
-                // Everything succeeded
+                // Process each tag
+                for (String tagName : anime.getTags()) {
+
+                    // Insert tag if it doesn't already exist
+                    try (PreparedStatement statement =
+                            connection.prepareStatement(insertTag)) {
+
+                        statement.setString(1, tagName);
+                        statement.executeUpdate();
+                    }
+
+                    // Find the tag's ID
+                    int tagId;
+
+                    try (PreparedStatement statement =
+                            connection.prepareStatement(findTag)) {
+
+                        statement.setString(1, tagName);
+
+                        try (ResultSet result = statement.executeQuery()) {
+                            if (!result.next()) {
+                                throw new SQLException(
+                                        "Could not find tag: " + tagName);
+                            }
+
+                            tagId = result.getInt("id");
+                        }
+                    }
+
+                    // Connect anime and tag
+                    try (PreparedStatement statement =
+                            connection.prepareStatement(insertAnimeTag)) {
+
+                        statement.setInt(1, animeId);
+                        statement.setInt(2, tagId);
+                        statement.executeUpdate();
+                    }
+                }
+
                 connection.commit();
 
             } catch (SQLException e) {
@@ -263,6 +351,8 @@ public class AnimeRepository {
                     anime.notes,
                     anime.current_episode_watched,
                     anime.year,
+                    anime.cover_image,
+                    anime.ani_list_id,
                     genres.name AS genre
                 FROM anime
                 LEFT JOIN anime_genres
@@ -270,6 +360,14 @@ public class AnimeRepository {
                 LEFT JOIN genres
                     ON anime_genres.genre_id = genres.id
                 ORDER BY anime.id
+                """;
+
+        String tagSql = """
+                SELECT tags.name
+                FROM tags
+                JOIN anime_tags
+                    ON tags.id = anime_tags.tag_id
+                WHERE anime_tags.anime_id = ?
                 """;
 
         try (Connection connection = connect();
@@ -287,22 +385,38 @@ public class AnimeRepository {
                         || currentAnime.getId() != animeId) {
 
                     currentAnime = new Anime(
-                            result.getString("title"),
-                            new ArrayList<>(),
-                            result.getInt("length"),
-                            result.getString("status"),
-                            result.getString("notes"),
-                            result.getInt("priority"),
-                            result.getInt("year")
-                    );
+                    result.getString("title"),
+                    new ArrayList<>(),
+                    result.getInt("length"),
+                    result.getString("status"),
+                    result.getString("notes"),
+                    result.getInt("priority"),
+                    result.getInt("year")
+            );
 
-                    currentAnime.setId(animeId);
-                    currentAnime.setRating(result.getDouble("rating"));
-                    currentAnime.setCurrentEpisodeWatched(
-                            result.getInt("current_episode_watched")
-                    );
+            currentAnime.setId(animeId);
+            currentAnime.setCoverImage(result.getString("cover_image"));
+            currentAnime.setAniListId(result.getInt("ani_list_id"));
+            currentAnime.setRating(result.getDouble("rating"));
+            currentAnime.setCurrentEpisodeWatched(
+                    result.getInt("current_episode_watched")
+            );
 
-                    animeList.add(currentAnime);
+            // Load tags
+            try (PreparedStatement tagStatement =
+                    connection.prepareStatement(tagSql)) {
+
+                tagStatement.setInt(1, animeId);
+
+                try (ResultSet tagResult = tagStatement.executeQuery()) {
+                    while (tagResult.next()) {
+                        currentAnime.getTags().add(
+                                tagResult.getString("name"));
+                    }
+                }
+            }
+
+            animeList.add(currentAnime);
                 }
 
                 // Add this row's genre
@@ -330,7 +444,9 @@ public class AnimeRepository {
                     priority = ?,
                     notes = ?,
                     current_episode_watched = ?,
-                    year = ?
+                    year = ?,
+                    cover_image = ?,
+                    ani_list_id = ?
                 WHERE id = ?
                 """;
 
@@ -338,6 +454,7 @@ public class AnimeRepository {
                 DELETE FROM anime_genres
                 WHERE anime_id = ?
                 """;
+                
 
         String insertGenre = """
                 INSERT OR IGNORE INTO genres (name)
@@ -353,6 +470,27 @@ public class AnimeRepository {
                 INSERT INTO anime_genres (anime_id, genre_id)
                 VALUES (?, ?)
                 """;
+
+        String deleteTags = """
+                DELETE FROM anime_tags
+                WHERE anime_id = ?
+                """;
+
+        String insertTag = """
+                INSERT OR IGNORE INTO tags (name)
+                VALUES (?)
+                """;
+
+        String findTag = """
+                SELECT id FROM tags
+                WHERE name = ?
+                """;
+
+        String insertAnimeTag = """
+                INSERT INTO anime_tags (anime_id, tag_id)
+                VALUES (?, ?)
+                """;
+                
 
         try (Connection connection = connect()) {
 
@@ -371,7 +509,9 @@ public class AnimeRepository {
                     statement.setString(6, anime.getNote());
                     statement.setInt(7, anime.getCurrentEpisodeWatched());
                     statement.setInt(8, anime.getYear());
-                    statement.setInt(9, anime.getId());
+                    statement.setString(9, anime.getCoverImage());
+                    statement.setInt(10, anime.getAniListId());
+                    statement.setInt(11, anime.getId());
 
                     statement.executeUpdate();
                 }
@@ -379,6 +519,14 @@ public class AnimeRepository {
                 // 2. Remove old genre relationships
                 try (PreparedStatement statement =
                         connection.prepareStatement(deleteGenres)) {
+
+                    statement.setInt(1, anime.getId());
+                    statement.executeUpdate();
+                }
+
+                // Remove old tag relationships
+                try (PreparedStatement statement =
+                        connection.prepareStatement(deleteTags)) {
 
                     statement.setInt(1, anime.getId());
                     statement.executeUpdate();
@@ -421,6 +569,42 @@ public class AnimeRepository {
                         statement.setInt(2, genreId);
                         statement.executeUpdate();
                     }
+
+                    // Add the new tag relationships
+                for (String tagName : anime.getTags()) {
+
+                    try (PreparedStatement statement =
+                            connection.prepareStatement(insertTag)) {
+
+                        statement.setString(1, tagName);
+                        statement.executeUpdate();
+                    }
+
+                    int tagId;
+
+                    try (PreparedStatement statement =
+                            connection.prepareStatement(findTag)) {
+
+                        statement.setString(1, tagName);
+
+                        try (ResultSet result = statement.executeQuery()) {
+                            if (!result.next()) {
+                                throw new SQLException(
+                                        "Could not find tag: " + tagName);
+                            }
+
+                            tagId = result.getInt("id");
+                        }
+                    }
+
+                    try (PreparedStatement statement =
+                            connection.prepareStatement(insertAnimeTag)) {
+
+                        statement.setInt(1, anime.getId());
+                        statement.setInt(2, tagId);
+                        statement.executeUpdate();
+                    }
+                }
                 }
 
                 connection.commit();
@@ -441,6 +625,11 @@ public class AnimeRepository {
                 WHERE anime_id = ?
                 """;
 
+        String deleteTags = """
+                DELETE FROM anime_tags
+                WHERE anime_id = ?
+                """;
+        
         String deleteAnime = """
                 DELETE FROM anime
                 WHERE id = ?
@@ -459,7 +648,15 @@ public class AnimeRepository {
                     statement.executeUpdate();
                 }
 
-                // 2. Delete the Anime itself
+                // 2. Delete Anime to tag relationships
+                try (PreparedStatement statement =
+                        connection.prepareStatement(deleteTags)) {
+
+                    statement.setInt(1, anime.getId());
+                    statement.executeUpdate();
+                }
+
+                // 3. Delete the Anime itself
                 try (PreparedStatement statement =
                         connection.prepareStatement(deleteAnime)) {
 

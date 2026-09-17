@@ -41,7 +41,7 @@ public class SplashOverlayPanel extends JPanel {
         state = 0;
         holdFrames = 0;
 
-        // playAudio(AUDIO_PATH);
+        playAudio(AUDIO_PATH);
 
         timer = new Timer(16, e -> advanceAnimationFrame(onComplete));
         timer.start();
